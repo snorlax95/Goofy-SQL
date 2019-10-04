@@ -1,0 +1,5 @@
+PyQt5==5.13.1
+PyMySQL==0.9.3
+postgres==2.2.2
+pyqtdeploy==2.4
+PyMySQL==0.9.3
