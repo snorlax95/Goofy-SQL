@@ -13,7 +13,7 @@ class MySQL():
 
     def select_database(self, db_name):
         self.cursor.execute(f"USE `{db_name}`")
-        self.select_database = db_name
+        self.selected_database = db_name
 
     def get_databases(self):
         self.cursor.execute("SHOW DATABASES")
@@ -32,7 +32,7 @@ class MySQL():
         tables = self.cursor.fetchall()
         table_names = []
         for table in tables:
-            table_names.append(table[f'Tables_in_{self.select_database}'])
+            table_names.append(table[f'Tables_in_{self.selected_database}'])
         return table_names
 
     def custom_query(self, query):

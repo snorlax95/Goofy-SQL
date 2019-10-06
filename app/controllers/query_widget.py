@@ -1,6 +1,6 @@
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QWidget, QStyleOption, QStyle
 from PyQt5 import uic
-from PyQt5.QtGui import QStandardItemModel, QStandardItem
+from PyQt5.QtGui import QStandardItemModel, QStandardItem, QPainter
 
 
 class QueryWidget(QWidget):
@@ -13,6 +13,13 @@ class QueryWidget(QWidget):
     def init_ui(self):
         uic.loadUi('../app/views/QueryView.ui', self)
         self.RunQueryButton.clicked.connect(self.run_query)
+        self.QueryEdit.setFocus()
+
+    def paintEvent(self, event):
+        opt = QStyleOption()
+        opt.initFrom(self)
+        p = QPainter(self)
+        self.style().drawPrimitive(QStyle.PE_Widget, opt, p, self)
 
     def run_query(self):
         self.query = self.QueryEdit.toPlainText()

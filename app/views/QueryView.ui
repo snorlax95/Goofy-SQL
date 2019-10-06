@@ -23,7 +23,7 @@
    <string notr="true">background-color: rgb(0, 0, 0);</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="2" column="0">
+   <item row="3" column="0">
     <widget class="QTableView" name="QueryResultsTable">
      <property name="styleSheet">
       <string notr="true">color: rgb(255, 255, 255);
@@ -36,7 +36,7 @@ QHeaderView::section { background-color:red }</string>
      </property>
     </widget>
    </item>
-   <item row="0" column="0">
+   <item row="1" column="0">
     <widget class="QPlainTextEdit" name="QueryEdit">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -46,9 +46,9 @@ QHeaderView::section { background-color:red }</string>
      </property>
     </widget>
    </item>
-   <item row="1" column="0">
+   <item row="0" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
+     <item alignment="Qt::AlignHCenter">
       <widget class="QPushButton" name="RunQueryButton">
        <property name="minimumSize">
         <size>
@@ -61,6 +61,9 @@ QHeaderView::section { background-color:red }</string>
          <width>150</width>
          <height>16777215</height>
         </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(51, 51, 51);</string>
        </property>
        <property name="text">
         <string>Run Query</string>
