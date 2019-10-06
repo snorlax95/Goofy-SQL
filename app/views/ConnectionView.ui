@@ -114,9 +114,9 @@
               <widget class="QWidget" name="formLayoutWidget_7">
                <property name="geometry">
                 <rect>
-                 <x>40</x>
+                 <x>30</x>
                  <y>10</y>
-                 <width>281</width>
+                 <width>291</width>
                  <height>321</height>
                 </rect>
                </property>
@@ -238,7 +238,7 @@
                 <rect>
                  <x>30</x>
                  <y>10</y>
-                 <width>281</width>
+                 <width>291</width>
                  <height>341</height>
                 </rect>
                </property>
@@ -386,7 +386,7 @@
                  </widget>
                 </item>
                 <item row="9" column="1">
-                 <widget class="QLineEdit" name="ssh_ssh_user_4">
+                 <widget class="QLineEdit" name="ssh_ssh_user">
                   <property name="styleSheet">
                    <string notr="true">background-color: rgb(127, 127, 127);</string>
                   </property>
@@ -403,12 +403,12 @@
                  </widget>
                 </item>
                 <item row="10" column="1">
-                 <widget class="QLineEdit" name="ssh_ssh_password_4">
+                 <widget class="QLineEdit" name="ssh_ssh_password">
                   <property name="styleSheet">
                    <string notr="true">background-color: rgb(127, 127, 127);</string>
                   </property>
                   <property name="echoMode">
-                   <enum>QLineEdit::Normal</enum>
+                   <enum>QLineEdit::Password</enum>
                   </property>
                  </widget>
                 </item>
@@ -420,7 +420,7 @@
                  </widget>
                 </item>
                 <item row="11" column="1">
-                 <widget class="QLineEdit" name="ssh_ssh_port_4">
+                 <widget class="QLineEdit" name="ssh_ssh_port">
                   <property name="styleSheet">
                    <string notr="true">background-color: rgb(127, 127, 127);</string>
                   </property>
@@ -474,7 +474,7 @@
     </widget>
    </item>
    <item row="0" column="0">
-    <layout class="QVBoxLayout" name="SavedConnections" stretch="0">
+    <layout class="QVBoxLayout" name="SavedConnections" stretch="0,0">
      <property name="spacing">
       <number>-1</number>
      </property>
@@ -487,10 +487,17 @@
      <property name="rightMargin">
       <number>5</number>
      </property>
-     <item>
+     <item alignment="Qt::AlignTop">
       <widget class="QPushButton" name="NewConnectionButton">
        <property name="text">
         <string>New Connection</string>
+       </property>
+      </widget>
+     </item>
+     <item alignment="Qt::AlignHCenter|Qt::AlignTop">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Favorites</string>
        </property>
       </widget>
      </item>

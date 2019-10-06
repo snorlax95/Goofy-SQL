@@ -5,8 +5,8 @@ from PyQt5.QtCore import Qt, pyqtSignal
 from models.connection import ConnectionModel
 
 
-class ConnectionController(QWidget):
-    isConnected = pyqtSignal(object, name="connection")
+class ConnectionWidget(QWidget):
+    isConnected = pyqtSignal(object, object, name="connection")
 
     def __init__(self):
         super().__init__()
@@ -27,11 +27,10 @@ class ConnectionController(QWidget):
         self.ConnectionSaveButton.clicked.connect(self.save_connection)
 
     def save_connection(self):
-        # take current connection details, convert to dict
-        # save to whereever we save those dicts
-        # add_connection_to_side with the dict (check if it's already added possibly)?? just update
-        # if it's already saved
         print('saving')
+
+    def get_connections(self):
+        print('getting saved connections')
 
     def connect(self):
         self.get_input_values()
@@ -40,7 +39,7 @@ class ConnectionController(QWidget):
                                               user=self.current_connection_details.username,
                                               password=self.current_connection_details.password,
                                               port=self.current_connection_details.port)
-            self.isConnected.emit(self.connection)
+            self.isConnected.emit(self.connection, self.current_connection_details)
         except:
             print('cannot connect')
 
@@ -74,7 +73,22 @@ class ConnectionController(QWidget):
 
     def open_saved_connection(self, saved_connection):
         connection_model = ConnectionModel(saved_connection)
+        if saved_connection is None:
+            current_index = self.ConnectionTypeTabs.currentIndex()
+            if current_index == 0:
+                connection_model.connection_type = 'tcp'
+            elif current_index == 1:
+                connection_model.connection_type = 'ssh'
+
         self.current_connection_details = connection_model
+
+         # TEMP DATA FOR QUICK TESTING
+        self.current_connection_details.host = '127.0.0.1'
+        self.current_connection_details.username = 'root'
+        self.current_connection_details.password = 'root'
+        self.current_connection_details.port = 5200
+        # END TEMP
+
         self.set_input_values()
 
     def set_input_values(self):
@@ -84,14 +98,24 @@ class ConnectionController(QWidget):
             self.tcp_username.setText(self.current_connection_details.username)
             self.tcp_password.setText(self.current_connection_details.password)
             self.tcp_database.setText(self.current_connection_details.database)
-            self.tcp_port.setText(self.current_connection_details.port)
+            self.tcp_port.setText(
+                str(self.current_connection_details.port)
+                if self.current_connection_details.port is not None else '')
         elif self.current_connection_details.connection_type == 'ssh':
             self.ssh_name.setText(self.current_connection_details.name)
             self.ssh_host.setText(self.current_connection_details.host)
             self.ssh_username.setText(self.current_connection_details.username)
             self.ssh_password.setText(self.current_connection_details.password)
             self.ssh_database.setText(self.current_connection_details.database)
-            self.ssh_port.setText(self.current_connection_details.port)
+            self.ssh_port.setText(
+                str(self.current_connection_details.port)
+                if self.current_connection_details.port is not None else '')
+            self.ssh_ssh_host.setText(self.current_connection_details.ssh_host)
+            self.ssh_ssh_user.setText(self.current_connection_details.ssh_user)
+            self.ssh_ssh_password.setText(self.current_connection_details.ssh_password)
+            self.ssh_ssh_port.setText(
+                str(self.current_connection_details.ssh_port)
+                if self.current_connection_details.ssh_port is not None else '')
 
     def get_input_values(self):
         if self.current_connection_details.connection_type == 'tcp':
@@ -108,6 +132,11 @@ class ConnectionController(QWidget):
             self.current_connection_details.password = self.ssh_password.text()
             self.current_connection_details.database = self.ssh_database.text()
             self.current_connection_details.port = int(self.ssh_port.text()) if self.ssh_port.text() != '' else None
+            self.current_connection_details.ssh_host = self.ssh_ssh_host.text()
+            self.current_connection_details.ssh_user = self.ssh_ssh_user.text()
+            self.current_connection_details.ssh_password = self.ssh_ssh_password.text()
+            self.current_connection_details.ssh_port = int(
+                self.ssh_ssh_port.text()) if self.ssh_ssh_port.text() != '' else None
 
     def new_connection(self):
         self.open_saved_connection(None)

@@ -8,22 +8,22 @@ class App:
     def __init__(self):
         app = QApplication(sys.argv)
         app.setStyle('Macintosh')
-        window = self.new_window()
+        self.windows = []
+        self.new_window()
         app.exec_()
 
     def new_window(self):
-        print('new window')
         window = MainWindow()
         self.create_menu(window)
         window.show()
-        return window
+        self.windows.append(window)
 
     def create_menu(self, window):
         top_menu = window.menuBar()
         top_menu.setNativeMenuBar(True)
 
         new_window = QAction(QIcon(None), 'New Window', top_menu)
-        new_window.setShortcut('Ctrl+Q')
+        new_window.setShortcut('Ctrl+w')
         new_window.setStatusTip('New Connection Window')
         new_window.triggered.connect(self.new_window)
 
