@@ -2,9 +2,9 @@ from functools import partial
 from PyQt5.QtWidgets import QWidget
 from PyQt5 import uic
 from PyQt5.QtCore import Qt
-from controllers.mysql_connection import MySQL
-from controllers.query_widget import QueryWidget
-from controllers.table_label import TableLabel
+from .mysql_connection import MySQL
+from .query_widget import QueryWidget
+from .table_label import TableLabel
 
 
 class MainWidget(QWidget):

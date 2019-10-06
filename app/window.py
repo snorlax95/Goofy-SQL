@@ -2,8 +2,6 @@ from PyQt5.QtWidgets import QMainWindow, QAction, QWidget
 from PyQt5 import uic
 from controllers.connection import ConnectionWidget
 from controllers.main_layout import MainWidget
-from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import QSize
 
 
 class MainWindow(QMainWindow):
@@ -21,7 +19,7 @@ class MainWindow(QMainWindow):
     def init_ui(self):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
-        uic.loadUi('../app/views/MainWindow.ui', self)
+        uic.loadUi('views/MainWindow.ui', self)
         connection_view = ConnectionWidget()
         connection_view.isConnected.connect(self.established_connection)
         self.setCentralWidget(connection_view)

@@ -19,7 +19,7 @@ class ConnectionWidget(QWidget):
         self.ConnectionTypeTabs.setCurrentIndex(0)
 
     def init_ui(self):
-        uic.loadUi('../app/views/ConnectionView.ui', self)
+        uic.loadUi('../views/ConnectionView.ui', self)
         self.ConnectionTypeTabs.currentChanged.connect(self.change_connection_type)
         self.NewConnectionButton.clicked.connect(self.new_connection)
         self.ConnectionButton.clicked.connect(self.connect)

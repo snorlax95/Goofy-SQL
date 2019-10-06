@@ -1,6 +1,6 @@
 import sys
 from window import MainWindow
-from PyQt5.QtWidgets import QMainWindow, QAction, QWidget, QApplication
+from PyQt5.QtWidgets import QAction, QApplication
 from PyQt5.QtGui import QIcon
 
 
