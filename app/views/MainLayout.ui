@@ -83,6 +83,38 @@
        <number>12</number>
       </property>
       <item>
+       <widget class="QPushButton" name="DatabaseRefreshButton">
+        <property name="minimumSize">
+         <size>
+          <width>20</width>
+          <height>60</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>20</width>
+          <height>60</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">border: none;</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset>
+          <normaloff>../assets/refresh.png</normaloff>../assets/refresh.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>14</width>
+          <height>14</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QComboBox" name="DatabaseDropdown">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -103,7 +135,7 @@
          </size>
         </property>
         <property name="styleSheet">
-         <string notr="true">background-color: rgb(153, 153, 153);</string>
+         <string notr="true"/>
         </property>
        </widget>
       </item>
@@ -197,7 +229,7 @@
      <property name="sizeConstraint">
       <enum>QLayout::SetMinimumSize</enum>
      </property>
-     <item>
+     <item alignment="Qt::AlignTop">
       <widget class="QLabel" name="label">
        <property name="minimumSize">
         <size>
@@ -212,7 +244,7 @@
         </size>
        </property>
        <property name="styleSheet">
-        <string notr="true">margin-bottom: 15px;</string>
+        <string notr="true"/>
        </property>
        <property name="frameShape">
         <enum>QFrame::NoFrame</enum>

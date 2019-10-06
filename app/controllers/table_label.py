@@ -7,13 +7,13 @@ class TableLabel(QLabel):
 
     def __init__(self, name):
         super().__init__()
+        self.setObjectName(f'table_{name}')
         self.setText(name)
         self.setMargin(5)
         self.name = name
 
     def mousePressEvent(self, ev):
         self.clicked.emit(self.name)
-        self.select()
 
     def deselect(self):
         self.setStyleSheet("background-color:none;")
