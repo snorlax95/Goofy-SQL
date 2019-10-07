@@ -3,4 +3,5 @@ PyMySQL==0.9.3
 postgres==2.2.2
 pyqtdeploy==2.4
 PyMySQL==0.9.3
-PyInstaller==3.4
+PyInstaller==3.5
+SIP==4.19.8

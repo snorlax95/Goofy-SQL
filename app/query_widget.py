@@ -1,6 +1,11 @@
+from os import path
 from PyQt5.QtWidgets import QWidget, QStyleOption, QStyle
 from PyQt5 import uic
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QPainter
+
+script_dir = path.dirname(__file__)
+ui_path = "views/QueryView.ui"
+ui_file = path.join(script_dir, ui_path)
 
 
 class QueryWidget(QWidget):
@@ -11,7 +16,7 @@ class QueryWidget(QWidget):
         self.init_ui()
 
     def init_ui(self):
-        uic.loadUi('../app/views/QueryView.ui', self)
+        uic.loadUi(ui_file, self)
         self.RunQueryButton.clicked.connect(self.run_query)
         self.QueryEdit.setFocus()
 

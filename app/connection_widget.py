@@ -1,8 +1,13 @@
 import pymysql
+from os import path
 from PyQt5.QtWidgets import QWidget, QLabel
 from PyQt5 import uic
 from PyQt5.QtCore import Qt, pyqtSignal
 from models.connection import ConnectionModel
+
+script_dir = path.dirname(__file__)
+ui_path = "views/ConnectionView.ui"
+ui_file = path.join(script_dir, ui_path)
 
 
 class ConnectionWidget(QWidget):
@@ -19,7 +24,7 @@ class ConnectionWidget(QWidget):
         self.ConnectionTypeTabs.setCurrentIndex(0)
 
     def init_ui(self):
-        uic.loadUi('../views/ConnectionView.ui', self)
+        uic.loadUi(ui_file, self)
         self.ConnectionTypeTabs.currentChanged.connect(self.change_connection_type)
         self.NewConnectionButton.clicked.connect(self.new_connection)
         self.ConnectionButton.clicked.connect(self.connect)

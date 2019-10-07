@@ -1,10 +1,14 @@
-from functools import partial
+from os import path
 from PyQt5.QtWidgets import QWidget
 from PyQt5 import uic
 from PyQt5.QtCore import Qt
-from .mysql_connection import MySQL
-from .query_widget import QueryWidget
-from .table_label import TableLabel
+from connections.mysql_connection import MySQL
+from query_widget import QueryWidget
+from table_label import TableLabel
+
+script_dir = path.dirname(__file__)
+ui_path = "views/MainLayout.ui"
+ui_file = path.join(script_dir, ui_path)
 
 
 class MainWidget(QWidget):
@@ -22,7 +26,7 @@ class MainWidget(QWidget):
         self.init_ui()
 
     def init_ui(self):
-        uic.loadUi('../app/views/MainLayout.ui', self)
+        uic.loadUi(ui_file, self)
         self.set_database_options()
 
         # TopBar buttons
