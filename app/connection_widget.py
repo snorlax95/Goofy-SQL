@@ -1,6 +1,6 @@
 import pymysql
 from os import path
-from PyQt5.QtWidgets import QWidget, QLabel
+from PyQt5.QtWidgets import QWidget, QLabel, QMessageBox
 from PyQt5 import uic
 from PyQt5.QtCore import Qt, pyqtSignal
 from models.connection import ConnectionModel
@@ -46,7 +46,7 @@ class ConnectionWidget(QWidget):
                                               port=self.current_connection_details.port)
             self.isConnected.emit(self.connection, self.current_connection_details)
         except:
-            print('cannot connect')
+            QMessageBox.about(self, 'Oops!', "You couldn't connect")
 
     def connect_test(self):
         self.get_input_values()
@@ -55,10 +55,10 @@ class ConnectionWidget(QWidget):
                                           user=self.current_connection_details.username,
                                           password=self.current_connection_details.password,
                                           port=self.current_connection_details.port)
-            print('connected')
             self.connection.close()
+            QMessageBox.about(self, 'Success!', "You're connected")
         except:
-            print('cannot connect')
+            QMessageBox.about(self, 'Oops!', "You couldn't connect")
 
     def add_connection_to_side(self, saved_connection):
         connection_item = QLabel()

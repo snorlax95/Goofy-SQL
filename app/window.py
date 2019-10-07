@@ -15,7 +15,7 @@ class MainWindow(QMainWindow):
         self.title = "Sample App"
         self.left = 10
         self.top = 10
-        self.width = 640
+        self.width = 900
         self.height = 640
         self.init_ui()
         self.connection = None
