@@ -142,7 +142,7 @@
       </size>
      </property>
      <property name="styleSheet">
-      <string notr="true">color: rgb(255, 255, 255);</string>
+      <string notr="true"/>
      </property>
      <property name="frameShape">
       <enum>QFrame::NoFrame</enum>
@@ -314,7 +314,7 @@
          <string notr="true">border: none;</string>
         </property>
         <property name="text">
-         <string>PushButton</string>
+         <string>Info</string>
         </property>
         <property name="icon">
          <iconset>

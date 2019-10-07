@@ -55,11 +55,12 @@ class MainWidget(QWidget):
     def refresh_database_options(self):
         self.DatabaseDropdown.currentIndexChanged.disconnect()
         self.set_database_options()
+        if self.connection_helper.selected_database is not None:
+            self.DatabaseDropdown.setCurrentText(self.connection_helper.selected_database)
 
     def refresh_tables(self):
         tables = self.connection_helper.get_tables()
         for table in self.tables:
-            print(table.name)
             self.LeftBar.removeWidget(table)
 
         self.tables = []
