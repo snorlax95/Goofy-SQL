@@ -7,7 +7,10 @@ from PyQt5.QtGui import QIcon
 class App:
     def __init__(self):
         app = QApplication(sys.argv)
-        app.setStyle('Macintosh')
+        if sys.platform == 'darwin':
+            app.setStyle('Macintosh')
+        else:
+            app.setStyle('Fusion')
         self.windows = []
         self.new_window()
         app.exec_()

@@ -8,6 +8,11 @@ will provide an easy to use, consistent UI for bot mac and windows
 1. python 3.7.2
 
 
+## mac/windows
+if on mac, it will use Macintosh style set in application.py
+if on windows/linux it will use Fusion style
+
+
 ## run locally
 cd into bin
 command: . run.sh
