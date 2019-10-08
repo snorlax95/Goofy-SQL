@@ -69,6 +69,12 @@
        <height>0</height>
       </size>
      </property>
+     <property name="maximumSize">
+      <size>
+       <width>140</width>
+       <height>16777215</height>
+      </size>
+     </property>
      <property name="frameShape">
       <enum>QFrame::NoFrame</enum>
      </property>
@@ -78,56 +84,56 @@
      <property name="lineWidth">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>141</width>
-        <height>513</height>
-       </rect>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <property name="leftMargin">
+       <number>0</number>
       </property>
-      <layout class="QVBoxLayout" name="LeftBar">
-       <property name="spacing">
-        <number>0</number>
-       </property>
-       <property name="sizeConstraint">
-        <enum>QLayout::SetMinimumSize</enum>
-       </property>
-       <item>
-        <widget class="QPushButton" name="RefreshTables">
-         <property name="minimumSize">
-          <size>
-           <width>140</width>
-           <height>15</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>130</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="styleSheet">
-          <string notr="true"/>
-         </property>
-         <property name="text">
-          <string>Tables</string>
-         </property>
-         <property name="icon">
-          <iconset>
-           <normaloff>../assets/refresh.png</normaloff>../assets/refresh.png</iconset>
-         </property>
-         <property name="default">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <layout class="QVBoxLayout" name="LeftBar">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="sizeConstraint">
+         <enum>QLayout::SetMinimumSize</enum>
+        </property>
+        <item alignment="Qt::AlignTop">
+         <widget class="QPushButton" name="RefreshTables">
+          <property name="minimumSize">
+           <size>
+            <width>140</width>
+            <height>15</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>130</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+          <property name="text">
+           <string>Tables</string>
+          </property>
+          <property name="icon">
+           <iconset>
+            <normaloff>../assets/refresh.png</normaloff>../assets/refresh.png</iconset>
+          </property>
+          <property name="default">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
     </widget>
    </item>
-   <item row="0" column="0" colspan="4" alignment="Qt::AlignLeft">
+   <item row="0" column="0" colspan="4" alignment="Qt::AlignLeft|Qt::AlignVCenter">
     <widget class="QFrame" name="TopBar">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -138,7 +144,13 @@
      <property name="minimumSize">
       <size>
        <width>0</width>
-       <height>50</height>
+       <height>60</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>60</height>
       </size>
      </property>
      <property name="styleSheet">
@@ -186,7 +198,7 @@
         </property>
        </widget>
       </item>
-      <item>
+      <item alignment="Qt::AlignVCenter">
        <widget class="QComboBox" name="DatabaseDropdown">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -197,7 +209,7 @@
         <property name="minimumSize">
          <size>
           <width>200</width>
-          <height>20</height>
+          <height>60</height>
          </size>
         </property>
         <property name="maximumSize">
@@ -221,13 +233,13 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>130</width>
+          <width>120</width>
           <height>60</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>139</width>
+          <width>120</width>
           <height>60</height>
          </size>
         </property>
@@ -259,13 +271,13 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>130</width>
+          <width>120</width>
           <height>60</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>130</width>
+          <width>120</width>
           <height>60</height>
          </size>
         </property>
@@ -300,13 +312,13 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>130</width>
+          <width>120</width>
           <height>60</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>130</width>
+          <width>120</width>
           <height>60</height>
          </size>
         </property>

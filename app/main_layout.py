@@ -14,9 +14,6 @@ ui_file = path.join(script_dir, ui_path)
 class MainWidget(QWidget):
     def __init__(self, connection, connection_details):
         super().__init__()
-        # current_view should be the main widget
-        # should have a method for update_table
-        # creating a new one should pass in the current table
         self.connection_details = connection_details
         self.connection_helper = MySQL(connection)
         self.selected_database = self.connection_details.database
@@ -75,7 +72,6 @@ class MainWidget(QWidget):
             self.select_table(self.connection_helper.selected_table)
 
     def set_database_options(self):
-        # database selection combo box
         databases = self.connection_helper.get_databases()
         self.DatabaseDropdown.clear()
         self.DatabaseDropdown.addItems(databases['common'])

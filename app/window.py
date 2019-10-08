@@ -1,6 +1,7 @@
 from os import path
 from PyQt5.QtWidgets import QMainWindow, QAction, QWidget
 from PyQt5 import uic
+from PyQt5.QtCore import Qt
 from connection_widget import ConnectionWidget
 from main_layout import MainWidget
 
@@ -13,6 +14,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.title = "Sample App"
+        self.setAttribute(Qt.WA_DeleteOnClose)
         self.left = 10
         self.top = 10
         self.width = 900
