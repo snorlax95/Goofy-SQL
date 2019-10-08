@@ -30,8 +30,6 @@ class QueryWidget(QWidget):
         self.query = self.QueryEdit.toPlainText()
         results = self.connection_helper.custom_query(self.query)
         if isinstance(results, str):
-            # Error occured with custom query. We don't know much about what they tried to run
-            # so just return the error
             QMessageBox.about(self, 'Oops!', f'You have an error: \n {results}')
         else:
             headers = list(results[0].keys())

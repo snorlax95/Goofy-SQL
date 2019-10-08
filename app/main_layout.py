@@ -1,9 +1,10 @@
 from os import path
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QWidget, QMessageBox
 from PyQt5 import uic
 from PyQt5.QtCore import Qt
 from connections.mysql_connection import MySQL
 from query_widget import QueryWidget
+from create_database_widget import CreateDatabaseWidget
 from table_label import TableLabel
 
 script_dir = path.dirname(__file__)
@@ -29,6 +30,7 @@ class MainWidget(QWidget):
 
         # TopBar buttons
         self.DatabaseRefreshButton.clicked.connect(self.refresh_database_options)
+        self.DatabaseCreateButton.clicked.connect(self.create_database)
         self.RefreshTables.clicked.connect(self.refresh_tables)
         self.RefreshTables.setEnabled(False)
 
@@ -81,9 +83,12 @@ class MainWidget(QWidget):
     def select_database(self):
         self.enable_buttons()
         self.connection_details.database = self.DatabaseDropdown.currentText()
-        self.connection_helper.select_database(self.connection_details.database)
-        self.refresh_tables()
-        self.update_current_view()
+        is_valid = self.connection_helper.select_database(self.connection_details.database)
+        if is_valid:
+            self.refresh_tables()
+            self.update_current_view()
+        else:
+            QMessageBox.about(self, 'Oops!', "Error trying to connect to database")
 
     def select_table(self, name):
         for table in self.tables:
@@ -92,6 +97,14 @@ class MainWidget(QWidget):
                 table.select()
                 self.connection_helper.selected_table = name
         self.update_current_view()
+
+    def create_database(self):
+        if self.current_view is not None:
+            self.MainLayout.removeWidget(self.current_view)
+        widget = CreateDatabaseWidget(self.connection_helper)
+        self.MainFrame.setVisible(False)
+        self.current_view = widget
+        self.MainLayout.addWidget(widget)
 
     def set_query_view(self):
         self.enable_buttons()

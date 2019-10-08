@@ -91,7 +91,7 @@ class ConnectionWidget(QWidget):
         self.current_connection_details.host = '127.0.0.1'
         self.current_connection_details.username = 'root'
         self.current_connection_details.password = 'root'
-        self.current_connection_details.port = 3306
+        self.current_connection_details.port = 5200
         # END TEMP
 
         self.set_input_values()

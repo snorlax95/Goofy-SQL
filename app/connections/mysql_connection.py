@@ -5,22 +5,48 @@ from pymysql.cursors import DictCursor
 class MySQL():
     def __init__(self, connection):
         self.connection = connection
-        self.cursor = self.connection.cursor(DictCursor)
         self.selected_database = None
         self.selected_table = None
 
     def __exit__(self):
-        self.cursor.close()
         self.connection.close()
 
+    def create_database(self, name, encoding, collation):
+        print('creating database')
+        cursor = self.connection.cursor(DictCursor)
+        try:
+            cursor.execute(f"CREATE DATABASE {name} SET {encoding} COLLATE {collation}")
+            cursor.close()
+            return True
+        except (pymysql.MySQLError, pymysql.Warning, pymysql.Error, pymysql.InterfaceError, pymysql.DatabaseError,
+                pymysql.DataError, pymysql.OperationalError, pymysql.IntegrityError, pymysql.InternalError,
+                pymysql.ProgrammingError, pymysql.NotSupportedError) as e:
+            return 'Got error {!r}, errno is {}'.format(e, e.args[0])
+
     def select_database(self, db_name):
-        self.cursor.execute(f"USE `{db_name}`")
-        self.selected_database = db_name
-        self.selected_table = None
+        cursor = self.connection.cursor(DictCursor)
+        cursor = self.use_database(db_name, cursor)
+        cursor.close()
+        if isinstance(cursor, str):
+            return False
+        else:
+            self.selected_database = db_name
+            self.selected_table = None
+            return True
+
+    def use_database(self, db_name, cursor):
+        try:
+            cursor.execute(f"USE `{db_name}`")
+            return cursor
+        except (pymysql.MySQLError, pymysql.Warning, pymysql.Error, pymysql.InterfaceError, pymysql.DatabaseError,
+                pymysql.DataError, pymysql.OperationalError, pymysql.IntegrityError, pymysql.InternalError,
+                pymysql.ProgrammingError, pymysql.NotSupportedError) as e:
+            return 'Got error {!r}, errno is {}'.format(e, e.args[0])
 
     def get_databases(self):
-        self.cursor.execute("SHOW DATABASES")
-        databases = self.cursor.fetchall()
+        cursor = self.connection.cursor(DictCursor)
+        cursor.execute("SHOW DATABASES")
+        databases = cursor.fetchall()
         database_names = {
             "common": ['sys', 'information_schema', 'mysql', 'performance_schema'],
             "unique": []
@@ -28,26 +54,34 @@ class MySQL():
         for database in databases:
             if database['Database'] not in database_names['common']:
                 database_names['unique'].append(database['Database'])
+        cursor.close()
         return database_names
 
     def get_tables(self):
-        self.cursor.execute("SHOW TABLES")
-        tables = self.cursor.fetchall()
+        cursor = self.connection.cursor(DictCursor)
+        cursor = self.use_database(self.selected_database, cursor)
+        cursor.execute("SHOW TABLES")
+        tables = cursor.fetchall()
         table_names = []
         for table in tables:
             table_names.append(table[f'Tables_in_{self.selected_database}'])
+        cursor.close()
         return table_names
 
     def custom_query(self, query):
+        cursor = self.connection.cursor(DictCursor)
+        cursor = self.use_database(self.selected_database, cursor)
         try:
             if query[:6] == 'SELECT':
-                self.cursor.execute(query)
-                result = self.cursor.fetchall()
+                cursor.execute(query)
+                result = cursor.fetchall()
             else:
-                result = self.cursor.execute(query)
+                result = cursor.execute(query)
                 self.connection.commit()
+            cursor.close()
             return result
         except (pymysql.MySQLError, pymysql.Warning, pymysql.Error, pymysql.InterfaceError, pymysql.DatabaseError,
                 pymysql.DataError,  pymysql.OperationalError, pymysql.IntegrityError, pymysql.InternalError,
                 pymysql.ProgrammingError, pymysql.NotSupportedError) as e:
+            cursor.close()
             return 'Got error {!r}, errno is {}'.format(e, e.args[0])
