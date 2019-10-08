@@ -61,7 +61,7 @@ class MainWidget(QWidget):
     def refresh_tables(self):
         tables = self.connection_helper.get_tables()
         for table in self.tables:
-            self.LeftBar.removeWidget(table)
+            table.setParent(None)
 
         self.tables = []
         for table in tables:

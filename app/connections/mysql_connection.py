@@ -16,6 +16,7 @@ class MySQL():
     def select_database(self, db_name):
         self.cursor.execute(f"USE `{db_name}`")
         self.selected_database = db_name
+        self.selected_table = None
 
     def get_databases(self):
         self.cursor.execute("SHOW DATABASES")
