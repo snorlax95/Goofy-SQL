@@ -1,4 +1,6 @@
+import pymysql
 from pymysql.cursors import DictCursor
+
 
 class MySQL():
     def __init__(self, connection):
@@ -42,7 +44,9 @@ class MySQL():
                 result = self.cursor.fetchall()
             else:
                 result = self.cursor.execute(query)
-            self.connection.commit()
+                self.connection.commit()
             return result
-        except:
-            return 'error with query'
+        except (pymysql.MySQLError, pymysql.Warning, pymysql.Error, pymysql.InterfaceError, pymysql.DatabaseError,
+                pymysql.DataError,  pymysql.OperationalError, pymysql.IntegrityError, pymysql.InternalError,
+                pymysql.ProgrammingError, pymysql.NotSupportedError) as e:
+            return 'Got error {!r}, errno is {}'.format(e, e.args[0])

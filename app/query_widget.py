@@ -1,5 +1,5 @@
 from os import path
-from PyQt5.QtWidgets import QWidget, QStyleOption, QStyle
+from PyQt5.QtWidgets import QWidget, QStyleOption, QStyle, QMessageBox
 from PyQt5 import uic
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QPainter
 
@@ -29,13 +29,18 @@ class QueryWidget(QWidget):
     def run_query(self):
         self.query = self.QueryEdit.toPlainText()
         results = self.connection_helper.custom_query(self.query)
-        headers = list(results[0].keys())
+        if isinstance(results, str):
+            # Error occured with custom query. We don't know much about what they tried to run
+            # so just return the error
+            QMessageBox.about(self, 'Oops!', f'You have an error: \n {results}')
+        else:
+            headers = list(results[0].keys())
 
-        model = QStandardItemModel()
-        model.setHorizontalHeaderLabels(headers)
-        for result in results:
-            model.insertRow(0, [QStandardItem(item) for item in list(result.values())])
-        self.QueryResultsTable.setModel(model)
+            model = QStandardItemModel()
+            model.setHorizontalHeaderLabels(headers)
+            for result in results:
+                model.insertRow(0, [QStandardItem(item) for item in list(result.values())])
+            self.QueryResultsTable.setModel(model)
 
     def update_connection(self, connection_helper):
         self.connection_helper = connection_helper

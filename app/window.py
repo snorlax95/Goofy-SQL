@@ -29,6 +29,7 @@ class MainWindow(QMainWindow):
         connection_view.isConnected.connect(self.established_connection)
         self.setCentralWidget(connection_view)
 
+
     def established_connection(self, connection, connection_details):
         self.connection = connection
         self.connection_details = connection_details
