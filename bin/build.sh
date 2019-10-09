@@ -1,2 +1,6 @@
 source fbsenv/bin/activate
-pip3 install -r "../app/requirements.txt" > /dev/null
+cd ../app
+
+pyinstaller --onefile --add-data="assets/*.png:assets" --add-data="views/*.ui:views" main.py
+
+cd ../bin
