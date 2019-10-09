@@ -72,7 +72,7 @@ class MySQL():
         cursor = self.connection.cursor(DictCursor)
         cursor = self.use_database(self.selected_database, cursor)
         try:
-            if query[:6] == 'SELECT':
+            if query[:6] == 'SELECT' or query[:4] == 'SHOW':
                 cursor.execute(query)
                 result = cursor.fetchall()
             else:
