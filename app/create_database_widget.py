@@ -26,7 +26,7 @@ class CreateDatabaseWidget(QWidget):
             print('gotta enter a name bro')
         created = self.connection_helper.create_database(name, encoding, collation)
         if isinstance(created, str):
-            QMessageBox.about(self, 'Oops!', f'You have an error: \n {results}')
+            QMessageBox.about(self, 'Oops!', f'You have an error: \n {created}')
         else:
             print('created')
 
