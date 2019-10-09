@@ -28,10 +28,16 @@ class QueryWidget(QWidget):
         if isinstance(results, str):
             QMessageBox.about(self, 'Oops!', f'You have an error: \n {results}')
         else:
-            headers = list(results[0].keys())
-            self.table.set_headers(headers)
-            self.table.set_rows(results)
-            self.table.display()
+            self.table.clear_rows()
+            if self.query[:6] == 'INSERT':
+                self.table.set_headers(['Results'])
+                self.table.set_rows([{'rows': f'Inserted {results} rows'}])
+                self.table.display()
+            else:
+                headers = list(results[0].keys())
+                self.table.set_headers(headers)
+                self.table.set_rows(results)
+                self.table.display()
 
     def update_connection(self, connection_helper):
         self.connection_helper = connection_helper

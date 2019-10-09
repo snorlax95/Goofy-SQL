@@ -99,8 +99,10 @@ class MainWidget(QWidget):
         self.update_current_view()
 
     def create_database(self):
+        if self.connection_helper.selected_database is not None:
+            self.enable_buttons()
         if self.current_view is not None:
-            self.MainLayout.removeWidget(self.current_view)
+            self.current_view.setParent(None)
         widget = CreateDatabaseWidget(self.connection_helper)
         self.MainFrame.setVisible(False)
         self.current_view = widget
@@ -110,7 +112,7 @@ class MainWidget(QWidget):
         self.enable_buttons()
         self.QueryButton.setEnabled(False)
         if self.current_view is not None:
-            self.MainLayout.removeWidget(self.current_view)
+            self.current_view.setParent(None)
         widget = QueryWidget(self.connection_helper)
         self.MainFrame.setVisible(False)
         self.current_view = widget

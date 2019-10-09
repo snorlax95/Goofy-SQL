@@ -1,7 +1,7 @@
 from os import path
 from PyQt5.QtWidgets import QWidget, QMessageBox, QHeaderView
 from PyQt5 import uic
-from PyQt5.QtGui import  QStandardItemModel, QStandardItem
+from PyQt5.QtGui import QStandardItemModel, QStandardItem
 
 script_dir = path.dirname(__file__)
 ui_path = "views/ResultsTable.ui"
@@ -21,8 +21,13 @@ class ResultsTable(QWidget):
         headers.append('')
         self.model.setHorizontalHeaderLabels(headers)
 
+    def clear_rows(self):
+        self.model.removeRows(0, self.model.rowCount())
+
+    def clear_headers(self):
+        self.model.setHorizontalHeaderLabels([])
+
     def set_rows(self, rows):
-        print(rows)
         for row in rows:
             self.model.insertRow(0, [QStandardItem(row) for row in list(row.values())])
 
