@@ -157,21 +157,27 @@
       <enum>QFrame::Sunken</enum>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
-      <property name="bottomMargin">
+      <property name="leftMargin">
        <number>12</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
       </property>
       <item>
        <widget class="QPushButton" name="DatabaseRefreshButton">
         <property name="minimumSize">
          <size>
           <width>20</width>
-          <height>60</height>
+          <height>40</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>20</width>
-          <height>60</height>
+          <height>40</height>
          </size>
         </property>
         <property name="styleSheet">
@@ -197,13 +203,13 @@
         <property name="minimumSize">
          <size>
           <width>20</width>
-          <height>60</height>
+          <height>40</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>20</width>
-          <height>60</height>
+          <height>40</height>
          </size>
         </property>
         <property name="styleSheet">
@@ -235,13 +241,13 @@
         <property name="minimumSize">
          <size>
           <width>200</width>
-          <height>60</height>
+          <height>40</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>200</width>
-          <height>60</height>
+          <height>40</height>
          </size>
         </property>
         <property name="styleSheet">
@@ -249,8 +255,8 @@
         </property>
        </widget>
       </item>
-      <item>
-       <widget class="QPushButton" name="ContentButton">
+      <item alignment="Qt::AlignVCenter">
+       <widget class="QToolButton" name="ContentButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -259,14 +265,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>130</width>
-          <height>60</height>
+          <width>60</width>
+          <height>40</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>139</width>
-          <height>60</height>
+          <width>60</width>
+          <height>40</height>
          </size>
         </property>
         <property name="styleSheet">
@@ -285,10 +291,13 @@
           <height>25</height>
          </size>
         </property>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonTextUnderIcon</enum>
+        </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="QueryButton">
+       <widget class="QToolButton" name="QueryButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -297,14 +306,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>130</width>
-          <height>60</height>
+          <width>60</width>
+          <height>40</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>130</width>
-          <height>60</height>
+          <width>60</width>
+          <height>40</height>
          </size>
         </property>
         <property name="layoutDirection">
@@ -326,10 +335,13 @@
           <height>25</height>
          </size>
         </property>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonTextUnderIcon</enum>
+        </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="InfoButton">
+       <widget class="QToolButton" name="InfoButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -338,14 +350,14 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>130</width>
-          <height>60</height>
+          <width>60</width>
+          <height>40</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>130</width>
-          <height>60</height>
+          <width>60</width>
+          <height>40</height>
          </size>
         </property>
         <property name="styleSheet">
@@ -363,6 +375,9 @@
           <width>25</width>
           <height>25</height>
          </size>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonTextUnderIcon</enum>
         </property>
        </widget>
       </item>
