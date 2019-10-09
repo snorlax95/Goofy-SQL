@@ -68,6 +68,13 @@ class MySQL():
         cursor.close()
         return table_names
 
+    def get_table_schema(self, table):
+        cursor = self.connection.cursor(DictCursor)
+        cursor.execute(f"DESCRIBE {table}")
+        schema = cursor.fetchall()
+        cursor.close()
+        return schema
+
     def custom_query(self, query):
         cursor = self.connection.cursor(DictCursor)
         cursor = self.use_database(self.selected_database, cursor)
@@ -85,3 +92,20 @@ class MySQL():
                 pymysql.ProgrammingError, pymysql.NotSupportedError) as e:
             cursor.close()
             return 'Got error {!r}, errno is {}'.format(e, e.args[0])
+
+    def update_query(self, table, column, value, identifier_column, identifier):
+            if table is None:
+                table = self.selected_table
+            update_query = f"UPDATE {table} SET {column}={value} WHERE {identifier_column}={identifier}"
+            cursor = self.connection.cursor(DictCursor)
+            cursor = self.use_database(self.selected_database, cursor)
+            try:
+                affected_rows = cursor.execute(update_query)
+                cursor.commit()
+                cursor.close()
+                return affected_rows
+            except (pymysql.MySQLError, pymysql.Warning, pymysql.Error, pymysql.InterfaceError, pymysql.DatabaseError,
+                    pymysql.DataError, pymysql.OperationalError, pymysql.IntegrityError, pymysql.InternalError,
+                    pymysql.ProgrammingError, pymysql.NotSupportedError) as e:
+                cursor.close()
+                return 'Got error {!r}, errno is {}'.format(e, e.args[0])

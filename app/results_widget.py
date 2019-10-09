@@ -21,6 +21,10 @@ class ResultsTable(QWidget):
         headers.append('')
         self.model.setHorizontalHeaderLabels(headers)
 
+    def set_blank(self):
+        self.set_headers(['Results'])
+        self.set_rows([{'value': 'No Results'}])
+
     def clear_rows(self):
         self.model.removeRows(0, self.model.rowCount())
 
@@ -29,7 +33,13 @@ class ResultsTable(QWidget):
 
     def set_rows(self, rows):
         for row in rows:
-            self.model.insertRow(0, [QStandardItem(row) for row in list(row.values())])
+            items = []
+            for item in row.values():
+                if isinstance(item, int):
+                    items.append(QStandardItem(str(item)))
+                else:
+                    items.append(QStandardItem(item))
+            self.model.insertRow(0, items)
 
     def display(self):
         self.ResultsTable.setModel(self.model)
