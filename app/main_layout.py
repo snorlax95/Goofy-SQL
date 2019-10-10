@@ -66,7 +66,7 @@ class MainWidget(QWidget):
         for table in tables:
             label = DynamicLabel(table)
             label.clicked.connect(self.select_table)
-            self.LeftBar.addWidget(label, 1, Qt.AlignTop)
+            self.LeftBar.addWidget(label)
             self.tables.append(label)
         if self.connection_helper.selected_table is None:
             self.select_table(tables[0])
@@ -93,7 +93,7 @@ class MainWidget(QWidget):
     def select_table(self, name):
         for table in self.tables:
             table.deselect()
-            if table.objectName() == f'table_{name}':
+            if table.name == name:
                 table.select()
                 self.connection_helper.selected_table = name
         self.update_current_view()

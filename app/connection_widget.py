@@ -36,6 +36,7 @@ class ConnectionWidget(QWidget):
         self.ConnectionButton.clicked.connect(self.connect)
         self.ConnectionTestButton.clicked.connect(self.connect_test)
         self.ConnectionSaveButton.clicked.connect(self.save_connection)
+        self.SavedConnections.setAlignment(Qt.AlignTop)
 
     def refresh_saved_connections(self):
         for connection in self.saved_connection_labels:
@@ -45,7 +46,7 @@ class ConnectionWidget(QWidget):
         for connection in self.saved_connections:
             label = DynamicLabel(connection['name'])
             label.clicked.connect(self.open_saved_connection)
-            self.SavedConnections.addWidget(label, 1, Qt.AlignTop)
+            self.SavedConnections.addWidget(label)
             self.saved_connection_labels.append(label)
 
     def delete_connection(self):

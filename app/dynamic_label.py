@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QLabel, QSizePolicy
 from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtGui import QFont
 
 
 class DynamicLabel(QLabel):
@@ -11,6 +12,13 @@ class DynamicLabel(QLabel):
         self.setMargin(5)
         self.name = name
         self.selected = False
+        self.setSizePolicy(QSizePolicy.Minimum,
+                           QSizePolicy.Minimum)
+        self.setMinimumHeight(20)
+        self.setMaximumHeight(35)
+        font = QFont()
+        font.setPointSize(12)
+        self.setFont(font)
 
     def mousePressEvent(self, ev):
         self.clicked.emit(self.name)
