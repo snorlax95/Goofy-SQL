@@ -5,7 +5,7 @@ from PyQt5.QtCore import Qt
 from connections.mysql_connection import MySQL
 from query_widget import QueryWidget
 from create_database_widget import CreateDatabaseWidget
-from table_label import TableLabel
+from dynamic_label import DynamicLabel
 
 script_dir = path.dirname(__file__)
 ui_path = "views/MainLayout.ui"
@@ -64,7 +64,7 @@ class MainWidget(QWidget):
 
         self.tables = []
         for table in tables:
-            label = TableLabel(table)
+            label = DynamicLabel(table)
             label.clicked.connect(self.select_table)
             self.LeftBar.addWidget(label, 1, Qt.AlignTop)
             self.tables.append(label)

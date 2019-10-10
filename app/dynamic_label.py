@@ -2,12 +2,11 @@ from PyQt5.QtWidgets import QLabel, QSizePolicy
 from PyQt5.QtCore import pyqtSignal
 
 
-class TableLabel(QLabel):
+class DynamicLabel(QLabel):
     clicked = pyqtSignal(str, name='name')
 
     def __init__(self, name):
         super().__init__()
-        self.setObjectName(f'table_{name}')
         self.setText(name)
         self.setMargin(5)
         self.name = name
