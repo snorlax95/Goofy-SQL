@@ -32,14 +32,14 @@ class ResultsTable(QWidget):
         self.model.setHorizontalHeaderLabels([])
 
     def set_rows(self, rows):
-        for row in rows:
+        for idx, row in enumerate(rows):
             items = []
             for item in row.values():
                 if isinstance(item, int):
                     items.append(QStandardItem(str(item)))
                 else:
                     items.append(QStandardItem(item))
-            self.model.insertRow(0, items)
+            self.model.insertRow(idx, items)
 
     def display(self):
         self.ResultsTable.setModel(self.model)
