@@ -202,6 +202,11 @@ class ConnectionWidget(QWidget):
         self.open_connection(None)
 
     def open_saved_connection(self, name):
+        for connection in self.saved_connection_labels:
+            connection.deselect()
+            if connection.name == name:
+                connection.select()
+
         for connection in self.saved_connections:
             if connection['name'] == name:
                 if connection['connection_type'] == 'tcp':

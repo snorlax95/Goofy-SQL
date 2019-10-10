@@ -17,11 +17,11 @@ class DynamicLabel(QLabel):
 
     def deselect(self):
         self.selected = False
-        self.setStyleSheet("background-color:none;")
+        self.setStyleSheet("color:none;")
 
     def select(self):
         self.selected = True
-        self.setStyleSheet("background-color:black;")
+        self.setStyleSheet("color:blue;")
 
 
 
