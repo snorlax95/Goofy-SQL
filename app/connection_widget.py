@@ -19,20 +19,17 @@ class ConnectionWidget(QWidget):
     def __init__(self):
         super().__init__()
         self.current_connection_details = None
-        self.connection = None
         self.saved_connections = []
         self.saved_connection_labels = []
         self.settings = QSettings("goofy-goobers", "goofy-sql")
 
         self.init_ui()
-        self.new_connection()
-        self.ConnectionTypeTabs.setCurrentIndex(1)
         self.get_connections()
 
     def init_ui(self):
         uic.loadUi(ui_file, self)
         self.ConnectionTypeTabs.currentChanged.connect(self.change_connection_type)
-        self.NewConnectionButton.clicked.connect(self.new_connection)
+        self.NewConnectionButton.clicked.connect(self.open_connection)
         self.ConnectionButton.clicked.connect(self.connect)
         self.ConnectionTestButton.clicked.connect(self.connect_test)
         self.ConnectionSaveButton.clicked.connect(self.save_connection)
@@ -48,9 +45,6 @@ class ConnectionWidget(QWidget):
             label.clicked.connect(self.open_saved_connection)
             self.SavedConnections.addWidget(label)
             self.saved_connection_labels.append(label)
-
-    def delete_connection(self):
-        print('deleting connection')
 
     def save_connection(self):
         self.get_input_values()
@@ -68,11 +62,35 @@ class ConnectionWidget(QWidget):
         self.settings.setValue("connections", json.dumps(self.saved_connections))
         self.refresh_saved_connections()
 
+    def open_connection(self, saved_connection=None):
+        self.current_connection_details = ConnectionModel(saved_connection)
+        if saved_connection is None:
+            if self.ConnectionTypeTabs.currentIndex() == 0:
+                self.current_connection_details.connection_type = 'tcp'
+            elif self.ConnectionTypeTabs.currentIndex() == 1:
+                self.current_connection_details.connection_type = 'ssh'
+        self.set_input_values()
+
+    def open_saved_connection(self, name):
+        for connection in self.saved_connection_labels:
+            connection.deselect()
+
+        for connection in self.saved_connections:
+            if connection['name'] == name:
+                if connection['connection_type'] == 'tcp':
+                    self.ConnectionTypeTabs.setCurrentIndex(0)
+                elif connection['connection_type'] == 'ssh':
+                    self.ConnectionTypeTabs.setCurrentIndex(1)
+                self.open_connection(connection)
+
     def get_connections(self):
         connections = self.settings.value("connections")
         if connections is not None:
             self.saved_connections = json.loads(connections)
             self.refresh_saved_connections()
+        else:
+            self.open_connection(None)
+            self.ConnectionTypeTabs.setCurrentIndex(1)
 
     def connect(self):
         self.get_input_values()
@@ -81,8 +99,7 @@ class ConnectionWidget(QWidget):
                 connection = self.connect_tcp()
             elif self.current_connection_details.connection_type == 'ssh':
                 connection = self.connect_ssh()
-            self.connection = connection
-            self.isConnected.emit(self.connection, self.current_connection_details)
+            self.isConnected.emit(connection, self.current_connection_details)
         except Exception as e:
             QMessageBox.about(self, 'Oops!', 'Got error {!r}, errno is {}'.format(e, e.args[0]))
 
@@ -132,24 +149,11 @@ class ConnectionWidget(QWidget):
     def change_connection_type(self, i):
         self.get_input_values()
         if i == 0:
-            connection_type = 'tcp'
-            self.ConnectionFrame.setMaximumSize(400, 400)
+            self.current_connection_details.connection_type = 'tcp'
+            self.ConnectionFrame.setMaximumSize(400, 375)
         elif i == 1:
-            connection_type = 'ssh'
+            self.current_connection_details.connection_type = 'ssh'
             self.ConnectionFrame.setMaximumSize(400, 500)
-        self.current_connection_details.connection_type = connection_type
-        self.set_input_values()
-
-    def open_connection(self, saved_connection):
-        connection_model = ConnectionModel(saved_connection)
-        if saved_connection is None:
-            current_index = self.ConnectionTypeTabs.currentIndex()
-            if current_index == 0:
-                connection_model.connection_type = 'tcp'
-            elif current_index == 1:
-                connection_model.connection_type = 'ssh'
-
-        self.current_connection_details = connection_model
         self.set_input_values()
 
     def set_input_values(self):
@@ -198,20 +202,3 @@ class ConnectionWidget(QWidget):
             self.current_connection_details.ssh_password = self.ssh_ssh_password.text()
             self.current_connection_details.ssh_port = int(
                 self.ssh_ssh_port.text()) if self.ssh_ssh_port.text() != '' else None
-
-    def new_connection(self):
-        self.open_connection(None)
-
-    def open_saved_connection(self, name):
-        for connection in self.saved_connection_labels:
-            connection.deselect()
-            if connection.name == name:
-                connection.select()
-
-        for connection in self.saved_connections:
-            if connection['name'] == name:
-                if connection['connection_type'] == 'tcp':
-                    self.ConnectionTypeTabs.setCurrentIndex(0)
-                elif connection['connection_type'] == 'ssh':
-                    self.ConnectionTypeTabs.setCurrentIndex(1)
-                self.open_connection(connection)

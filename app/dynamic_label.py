@@ -22,6 +22,7 @@ class DynamicLabel(QLabel):
 
     def mousePressEvent(self, ev):
         self.clicked.emit(self.name)
+        self.select()
 
     def deselect(self):
         self.selected = False
