@@ -14,8 +14,8 @@ class DynamicLabel(QLabel):
         self.selected = False
         self.setSizePolicy(QSizePolicy.Minimum,
                            QSizePolicy.Minimum)
-        self.setMinimumHeight(20)
-        self.setMaximumHeight(35)
+        self.setMinimumHeight(25)
+        self.setMaximumHeight(25)
         font = QFont()
         font.setPointSize(12)
         self.setFont(font)

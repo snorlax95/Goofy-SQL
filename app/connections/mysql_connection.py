@@ -1,4 +1,3 @@
-import pymysql
 from pymysql.cursors import DictCursor
 
 
@@ -18,9 +17,7 @@ class MySQL():
             cursor.execute(f"CREATE DATABASE {name} SET {encoding} COLLATE {collation}")
             cursor.close()
             return True
-        except (pymysql.MySQLError, pymysql.Warning, pymysql.Error, pymysql.InterfaceError, pymysql.DatabaseError,
-                pymysql.DataError, pymysql.OperationalError, pymysql.IntegrityError, pymysql.InternalError,
-                pymysql.ProgrammingError, pymysql.NotSupportedError) as e:
+        except Exception as e:
             return 'Got error {!r}, errno is {}'.format(e, e.args[0])
 
     def select_database(self, db_name):
@@ -38,9 +35,7 @@ class MySQL():
         try:
             cursor.execute(f"USE `{db_name}`")
             return cursor
-        except (pymysql.MySQLError, pymysql.Warning, pymysql.Error, pymysql.InterfaceError, pymysql.DatabaseError,
-                pymysql.DataError, pymysql.OperationalError, pymysql.IntegrityError, pymysql.InternalError,
-                pymysql.ProgrammingError, pymysql.NotSupportedError) as e:
+        except Exception as e:
             return 'Got error {!r}, errno is {}'.format(e, e.args[0])
 
     def get_databases(self):
@@ -87,9 +82,7 @@ class MySQL():
                 self.connection.commit()
             cursor.close()
             return result
-        except (pymysql.MySQLError, pymysql.Warning, pymysql.Error, pymysql.InterfaceError, pymysql.DatabaseError,
-                pymysql.DataError,  pymysql.OperationalError, pymysql.IntegrityError, pymysql.InternalError,
-                pymysql.ProgrammingError, pymysql.NotSupportedError) as e:
+        except Exception as e:
             cursor.close()
             return 'Got error {!r}, errno is {}'.format(e, e.args[0])
 
@@ -104,8 +97,6 @@ class MySQL():
                 cursor.commit()
                 cursor.close()
                 return affected_rows
-            except (pymysql.MySQLError, pymysql.Warning, pymysql.Error, pymysql.InterfaceError, pymysql.DatabaseError,
-                    pymysql.DataError, pymysql.OperationalError, pymysql.IntegrityError, pymysql.InternalError,
-                    pymysql.ProgrammingError, pymysql.NotSupportedError) as e:
+            except Exception as e:
                 cursor.close()
                 return 'Got error {!r}, errno is {}'.format(e, e.args[0])

@@ -1,6 +1,6 @@
 import pymysql
 import json
-from sshtunnel import SSHTunnelForwarder, BaseSSHTunnelForwarderError, HandlerSSHTunnelForwarderError
+from sshtunnel import SSHTunnelForwarder
 from os import path
 from PyQt5.QtWidgets import QWidget, QLabel, QMessageBox
 from PyQt5 import uic
@@ -83,10 +83,7 @@ class ConnectionWidget(QWidget):
                 connection = self.connect_ssh()
             self.connection = connection
             self.isConnected.emit(self.connection, self.current_connection_details)
-        except (pymysql.MySQLError, pymysql.Warning, pymysql.Error, pymysql.InterfaceError, pymysql.DatabaseError,
-                pymysql.DataError, pymysql.OperationalError, pymysql.IntegrityError, pymysql.InternalError,
-                pymysql.ProgrammingError, pymysql.NotSupportedError, BaseSSHTunnelForwarderError,
-                HandlerSSHTunnelForwarderError) as e:
+        except Exception as e:
             QMessageBox.about(self, 'Oops!', 'Got error {!r}, errno is {}'.format(e, e.args[0]))
 
     def connect_test(self):
@@ -98,10 +95,7 @@ class ConnectionWidget(QWidget):
                 connection = self.connect_ssh()
             connection.close()
             QMessageBox.about(self, 'Success!', "You're connected")
-        except (pymysql.MySQLError, pymysql.Warning, pymysql.Error, pymysql.InterfaceError, pymysql.DatabaseError,
-                pymysql.DataError, pymysql.OperationalError, pymysql.IntegrityError, pymysql.InternalError,
-                pymysql.ProgrammingError, pymysql.NotSupportedError, BaseSSHTunnelForwarderError,
-                HandlerSSHTunnelForwarderError) as e:
+        except Exception as e:
             QMessageBox.about(self, 'Oops!', 'Got error {!r}, errno is {}'.format(e, e.args[0]))
 
     def connect_tcp(self):
