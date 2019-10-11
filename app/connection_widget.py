@@ -9,18 +9,17 @@ from models.connection import ConnectionModel
 from dynamic_label import DynamicLabel
 
 script_dir = path.dirname(__file__)
-ui_path = "views/ConnectionView.ui"
-ui_file = path.join(script_dir, ui_path)
+ui_file = path.join(script_dir, "views/ConnectionView.ui")
 
 
 class ConnectionWidget(QWidget):
-    isConnected = pyqtSignal(object, object, name="connection")
+    connected = pyqtSignal(object, object, name="connection")
 
     def __init__(self):
         super().__init__()
         self.current_connection_details = None
-        self.saved_connections = []
-        self.saved_connection_labels = []
+        self.saved_connections = {}
+        self.saved_connection_labels = {}
         self.settings = QSettings("goofy-goobers", "goofy-sql")
 
         self.init_ui()
@@ -29,7 +28,7 @@ class ConnectionWidget(QWidget):
     def init_ui(self):
         uic.loadUi(ui_file, self)
         self.ConnectionTypeTabs.currentChanged.connect(self.change_connection_type)
-        self.NewConnectionButton.clicked.connect(self.open_connection)
+        self.NewConnectionButton.clicked.connect(self.open_new_connection)
         self.ConnectionButton.clicked.connect(self.connect)
         self.ConnectionTestButton.clicked.connect(self.connect_test)
         self.ConnectionSaveButton.clicked.connect(self.save_connection)
@@ -39,30 +38,28 @@ class ConnectionWidget(QWidget):
         for connection in self.saved_connection_labels:
             connection.setParent(None)
 
-        self.saved_connection_labels = []
-        for connection in self.saved_connections:
+        self.saved_connection_labels = {}
+        for connection in self.saved_connections.values():
             label = DynamicLabel(connection['name'])
             label.clicked.connect(self.open_saved_connection)
             self.SavedConnections.addWidget(label)
-            self.saved_connection_labels.append(label)
+            self.saved_connection_labels[connection['name']] = label
 
     def save_connection(self):
         self.get_input_values()
-        is_already_saved = False
-        for idx, connection in enumerate(self.saved_connections):
-            if connection['name'] == self.current_connection_details.name:
-                is_already_saved = True
-                self.saved_connections[idx] = self.current_connection_details.get_details_dict()
         if self.current_connection_details.name == '':
             QMessageBox.about(self, 'Oops!', 'Please enter name before saving')
             return False
 
-        if is_already_saved is False:
-            self.saved_connections.append(self.current_connection_details.get_details_dict())
+        connection_details = self.current_connection_details.get_details_dict()
+        self.saved_connections[self.current_connection_details.name] = connection_details
         self.settings.setValue("connections", json.dumps(self.saved_connections))
         self.refresh_saved_connections()
 
-    def open_connection(self, saved_connection=None):
+    def open_new_connection(self):
+        self.open_connection(None)
+
+    def open_connection(self, saved_connection):
         self.current_connection_details = ConnectionModel(saved_connection)
         if saved_connection is None:
             if self.ConnectionTypeTabs.currentIndex() == 0:
@@ -72,16 +69,15 @@ class ConnectionWidget(QWidget):
         self.set_input_values()
 
     def open_saved_connection(self, name):
-        for connection in self.saved_connection_labels:
+        for connection in self.saved_connection_labels.values():
             connection.deselect()
 
-        for connection in self.saved_connections:
-            if connection['name'] == name:
-                if connection['connection_type'] == 'tcp':
-                    self.ConnectionTypeTabs.setCurrentIndex(0)
-                elif connection['connection_type'] == 'ssh':
-                    self.ConnectionTypeTabs.setCurrentIndex(1)
-                self.open_connection(connection)
+        connection = self.saved_connections[name]
+        self.open_connection(connection)
+        if connection['connection_type'] == 'tcp':
+            self.ConnectionTypeTabs.setCurrentIndex(0)
+        elif connection['connection_type'] == 'ssh':
+            self.ConnectionTypeTabs.setCurrentIndex(1)
 
     def get_connections(self):
         connections = self.settings.value("connections")
@@ -99,7 +95,7 @@ class ConnectionWidget(QWidget):
                 connection = self.connect_tcp()
             elif self.current_connection_details.connection_type == 'ssh':
                 connection = self.connect_ssh()
-            self.isConnected.emit(connection, self.current_connection_details)
+            self.connected.emit(connection, self.current_connection_details)
         except Exception as e:
             QMessageBox.about(self, 'Oops!', 'Got error {!r}, errno is {}'.format(e, e.args[0]))
 
@@ -127,15 +123,12 @@ class ConnectionWidget(QWidget):
         host = self.current_connection_details.host \
             if self.current_connection_details.host != self.current_connection_details.ssh_host else '127.0.0.1'
         port = self.current_connection_details.port if self.current_connection_details.port is not None else 3306
-        ssh_host = self.current_connection_details.ssh_host
-        ssh_user = self.current_connection_details.ssh_user
-        ssh_password = self.current_connection_details.ssh_password
         ssh_port = self.current_connection_details.ssh_port \
             if self.current_connection_details.ssh_port is not None else 22
 
-        server = SSHTunnelForwarder((ssh_host, ssh_port),
-                                    ssh_password=ssh_password,
-                                    ssh_username=ssh_user,
+        server = SSHTunnelForwarder((self.current_connection_details.ssh_host, ssh_port),
+                                    ssh_password=self.current_connection_details.ssh_password,
+                                    ssh_username=self.current_connection_details.ssh_user,
                                     remote_bind_address=(host, port))
 
         server.start()

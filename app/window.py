@@ -6,8 +6,7 @@ from connection_widget import ConnectionWidget
 from main_layout import MainWidget
 
 script_dir = path.dirname(__file__)
-ui_path = "views/MainWindow.ui"
-ui_file = path.join(script_dir, ui_path)
+ui_file = path.join(script_dir, "views/MainWindow.ui")
 
 
 class MainWindow(QMainWindow):
@@ -26,7 +25,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
         connection_view = ConnectionWidget()
-        connection_view.isConnected.connect(self.established_connection)
+        connection_view.connected.connect(self.established_connection)
         self.setCentralWidget(connection_view)
 
     def established_connection(self, connection, connection_details):

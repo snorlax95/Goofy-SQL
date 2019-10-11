@@ -8,8 +8,7 @@ from create_database_widget import CreateDatabaseWidget
 from dynamic_label import DynamicLabel
 
 script_dir = path.dirname(__file__)
-ui_path = "views/MainLayout.ui"
-ui_file = path.join(script_dir, ui_path)
+ui_file = path.join(script_dir, "views/MainLayout.ui")
 
 
 class MainWidget(QWidget):

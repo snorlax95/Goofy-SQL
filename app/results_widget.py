@@ -4,8 +4,7 @@ from PyQt5 import uic
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 
 script_dir = path.dirname(__file__)
-ui_path = "views/ResultsTable.ui"
-ui_file = path.join(script_dir, ui_path)
+ui_file = path.join(script_dir, "views/ResultsTable.ui")
 
 
 class ResultsTable(QWidget):
