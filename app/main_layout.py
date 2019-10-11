@@ -81,7 +81,6 @@ class MainWidget(QWidget):
         if self.connection_helper.selected_database is not None:
             self.DatabaseDropdown.setCurrentText(self.connection_helper.selected_database)
 
-
     def select_database(self):
         self.enable_buttons()
         self.connection_details.database = self.DatabaseDropdown.currentText()
@@ -116,9 +115,8 @@ class MainWidget(QWidget):
         if self.current_view is not None:
             self.current_view.setParent(None)
         widget = QueryWidget(self.connection_helper)
-        self.MainFrame.setVisible(False)
         self.current_view = widget
-        self.MainLayout.addWidget(widget)
+        self.MainFrame.layout().addWidget(widget)
 
     def set_info_view(self):
         self.enable_buttons()

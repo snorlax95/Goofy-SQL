@@ -13,7 +13,7 @@ ui_file = path.join(script_dir, "views/ConnectionView.ui")
 
 
 class ConnectionWidget(QWidget):
-    connected = pyqtSignal(object, object, name="connection")
+    connected = pyqtSignal(object, object, object)
 
     def __init__(self):
         super().__init__()
@@ -92,10 +92,10 @@ class ConnectionWidget(QWidget):
         self.get_input_values()
         try:
             if self.current_connection_details.connection_type == 'tcp':
-                connection = self.connect_tcp()
+                result = self.connect_tcp()
             elif self.current_connection_details.connection_type == 'ssh':
-                connection = self.connect_ssh()
-            self.connected.emit(connection, self.current_connection_details)
+                result = self.connect_ssh()
+            self.connected.emit(result['connection'], self.current_connection_details, result['server'])
         except Exception as e:
             QMessageBox.about(self, 'Oops!', 'Got error {!r}, errno is {}'.format(e, e.args[0]))
 
@@ -103,10 +103,12 @@ class ConnectionWidget(QWidget):
         self.get_input_values()
         try:
             if self.current_connection_details.connection_type == 'tcp':
-                connection = self.connect_tcp()
+                result = self.connect_tcp()
             elif self.current_connection_details.connection_type == 'ssh':
-                connection = self.connect_ssh()
-            connection.close()
+                result = self.connect_ssh()
+            result['connection'].close()
+            if result['server'] is not None:
+                result['server'].close()
             QMessageBox.about(self, 'Success!', "You're connected")
         except Exception as e:
             QMessageBox.about(self, 'Oops!', 'Got error {!r}, errno is {}'.format(e, e.args[0]))
@@ -117,7 +119,7 @@ class ConnectionWidget(QWidget):
                                      password=self.current_connection_details.password,
                                      port=self.current_connection_details.port,
                                      database=self.current_connection_details.database)
-        return connection
+        return {"connection": connection, "server": None}
 
     def connect_ssh(self):
         host = self.current_connection_details.host \
@@ -137,7 +139,7 @@ class ConnectionWidget(QWidget):
                                      password=self.current_connection_details.password,
                                      port=server.local_bind_port,
                                      database=self.current_connection_details.database)
-        return connection
+        return {'connection': connection, "server": server}
 
     def change_connection_type(self, i):
         self.get_input_values()
