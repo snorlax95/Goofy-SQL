@@ -23,6 +23,10 @@ class MainWindow(QMainWindow):
         self.connection = None
         self.connection_details = None
 
+    def __exit__(self):
+        if self.connection is not None and self.connection.open:
+            self.connection.close()
+
     def init_ui(self):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)

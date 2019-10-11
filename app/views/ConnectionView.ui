@@ -98,7 +98,7 @@
               <enum>QTabWidget::Rounded</enum>
              </property>
              <property name="currentIndex">
-              <number>1</number>
+              <number>0</number>
              </property>
              <property name="tabsClosable">
               <bool>false</bool>
@@ -486,20 +486,8 @@
      <property name="rightMargin">
       <number>5</number>
      </property>
-     <item>
+     <item alignment="Qt::AlignTop">
       <widget class="QPushButton" name="NewConnectionButton">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>25</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>25</height>
-        </size>
-       </property>
        <property name="text">
         <string>New Connection</string>
        </property>
@@ -507,8 +495,16 @@
      </item>
      <item alignment="Qt::AlignHCenter|Qt::AlignTop">
       <widget class="QLabel" name="label">
+       <property name="font">
+        <font>
+         <pointsize>20</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Favorites</string>
+       </property>
+       <property name="margin">
+        <number>5</number>
        </property>
       </widget>
      </item>

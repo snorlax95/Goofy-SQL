@@ -18,6 +18,7 @@ class MainWidget(QWidget):
         self.connection_details = connection_details
         self.connection_helper = MySQL(connection)
         self.selected_database = self.connection_details.database
+        self.connection_helper.selected_database = self.selected_database
         self.databases = []
         self.tables = []
         self.current_view = None
@@ -54,8 +55,6 @@ class MainWidget(QWidget):
     def refresh_database_options(self):
         self.DatabaseDropdown.currentIndexChanged.disconnect()
         self.set_database_options()
-        if self.connection_helper.selected_database is not None:
-            self.DatabaseDropdown.setCurrentText(self.connection_helper.selected_database)
 
     def refresh_tables(self):
         tables = self.connection_helper.get_tables()
@@ -72,6 +71,7 @@ class MainWidget(QWidget):
             self.select_table(tables[0])
         else:
             self.select_table(self.connection_helper.selected_table)
+            self.select_table(self.connection_helper.selected_table)
 
     def set_database_options(self):
         databases = self.connection_helper.get_databases()
@@ -79,6 +79,9 @@ class MainWidget(QWidget):
         self.DatabaseDropdown.addItems(databases['common'])
         self.DatabaseDropdown.addItems(databases['unique'])
         self.DatabaseDropdown.currentIndexChanged.connect(self.select_database)
+        if self.connection_helper.selected_database is not None:
+            self.DatabaseDropdown.setCurrentText(self.connection_helper.selected_database)
+
 
     def select_database(self):
         self.enable_buttons()

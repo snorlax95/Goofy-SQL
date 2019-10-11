@@ -1,6 +1,6 @@
 import pymysql
 import json
-from sshtunnel import SSHTunnelForwarder
+from sshtunnel import SSHTunnelForwarder, BaseSSHTunnelForwarderError, HandlerSSHTunnelForwarderError
 from os import path
 from PyQt5.QtWidgets import QWidget, QLabel, QMessageBox
 from PyQt5 import uic
@@ -78,56 +78,62 @@ class ConnectionWidget(QWidget):
         self.get_input_values()
         try:
             if self.current_connection_details.connection_type == 'tcp':
-                self.connect_tcp()
+                connection = self.connect_tcp()
             elif self.current_connection_details.connection_type == 'ssh':
-                self.connect_ssh()
+                connection = self.connect_ssh()
+            self.connection = connection
             self.isConnected.emit(self.connection, self.current_connection_details)
         except (pymysql.MySQLError, pymysql.Warning, pymysql.Error, pymysql.InterfaceError, pymysql.DatabaseError,
                 pymysql.DataError, pymysql.OperationalError, pymysql.IntegrityError, pymysql.InternalError,
-                pymysql.ProgrammingError, pymysql.NotSupportedError) as e:
+                pymysql.ProgrammingError, pymysql.NotSupportedError, BaseSSHTunnelForwarderError,
+                HandlerSSHTunnelForwarderError) as e:
+            QMessageBox.about(self, 'Oops!', 'Got error {!r}, errno is {}'.format(e, e.args[0]))
+
+    def connect_test(self):
+        self.get_input_values()
+        try:
+            if self.current_connection_details.connection_type == 'tcp':
+                connection = self.connect_tcp()
+            elif self.current_connection_details.connection_type == 'ssh':
+                connection = self.connect_ssh()
+            connection.close()
+            QMessageBox.about(self, 'Success!', "You're connected")
+        except (pymysql.MySQLError, pymysql.Warning, pymysql.Error, pymysql.InterfaceError, pymysql.DatabaseError,
+                pymysql.DataError, pymysql.OperationalError, pymysql.IntegrityError, pymysql.InternalError,
+                pymysql.ProgrammingError, pymysql.NotSupportedError, BaseSSHTunnelForwarderError,
+                HandlerSSHTunnelForwarderError) as e:
             QMessageBox.about(self, 'Oops!', 'Got error {!r}, errno is {}'.format(e, e.args[0]))
 
     def connect_tcp(self):
-        self.connection = pymysql.connect(host=self.current_connection_details.host,
-                                          user=self.current_connection_details.username,
-                                          password=self.current_connection_details.password,
-                                          port=self.current_connection_details.port,
-                                          database = self.current_connection_details.database)
+        connection = pymysql.connect(host=self.current_connection_details.host,
+                                     user=self.current_connection_details.username,
+                                     password=self.current_connection_details.password,
+                                     port=self.current_connection_details.port,
+                                     database=self.current_connection_details.database)
+        return connection
 
     def connect_ssh(self):
-        host = self.current_connection_details.host
+        host = self.current_connection_details.host \
+            if self.current_connection_details.host != self.current_connection_details.ssh_host else '127.0.0.1'
         port = self.current_connection_details.port if self.current_connection_details.port is not None else 3306
         ssh_host = self.current_connection_details.ssh_host
         ssh_user = self.current_connection_details.ssh_user
         ssh_password = self.current_connection_details.ssh_password
         ssh_port = self.current_connection_details.ssh_port \
             if self.current_connection_details.ssh_port is not None else 22
-        with SSHTunnelForwarder((ssh_host, ssh_port),
-                                ssh_password=ssh_password,
-                                ssh_username=ssh_user,
-                                local_bind_address=('127.0.0.1', port),
-                                remote_bind_address=(host, port)) as server:
-            print(server.local_bind_port)
-            self.connection = pymysql.connect(host=host if ssh_host == host else '127.0.0.1',
-                                              user=self.current_connection_details.username,
-                                              password=self.current_connection_details.password,
-                                              port=server.local_bind_port,
-                                              database=self.current_connection_details.database)
 
-    def connect_test(self):
-        self.get_input_values()
-        try:
-            if self.current_connection_details.connection_type == 'tcp':
-                self.connect_tcp()
-            elif self.current_connection_details.connection_type == 'ssh':
-                self.connect_ssh()
+        server = SSHTunnelForwarder((ssh_host, ssh_port),
+                                    ssh_password=ssh_password,
+                                    ssh_username=ssh_user,
+                                    remote_bind_address=(host, port))
 
-            self.connection.close()
-            QMessageBox.about(self, 'Success!', "You're connected")
-        except (pymysql.MySQLError, pymysql.Warning, pymysql.Error, pymysql.InterfaceError, pymysql.DatabaseError,
-                pymysql.DataError, pymysql.OperationalError, pymysql.IntegrityError, pymysql.InternalError,
-                pymysql.ProgrammingError, pymysql.NotSupportedError) as e:
-            QMessageBox.about(self, 'Oops!', 'Got error {!r}, errno is {}'.format(e, e.args[0]))
+        server.start()
+        connection = pymysql.connect(host=host,
+                                     user=self.current_connection_details.username,
+                                     password=self.current_connection_details.password,
+                                     port=server.local_bind_port,
+                                     database=self.current_connection_details.database)
+        return connection
 
     def change_connection_type(self, i):
         self.get_input_values()
@@ -184,14 +190,14 @@ class ConnectionWidget(QWidget):
             self.current_connection_details.host = self.tcp_host.text()
             self.current_connection_details.username = self.tcp_username.text()
             self.current_connection_details.password = self.tcp_password.text()
-            self.current_connection_details.database = self.tcp_database.text()
+            self.current_connection_details.database = self.tcp_database.text() if self.tcp_database.text() != '' else None
             self.current_connection_details.port = int(self.tcp_port.text()) if self.tcp_port.text() != '' else None
         elif self.current_connection_details.connection_type == 'ssh':
             self.current_connection_details.name = self.ssh_name.text()
             self.current_connection_details.host = self.ssh_host.text()
             self.current_connection_details.username = self.ssh_username.text()
             self.current_connection_details.password = self.ssh_password.text()
-            self.current_connection_details.database = self.ssh_database.text()
+            self.current_connection_details.database = self.ssh_database.text() if self.ssh_database.text() != '' else None
             self.current_connection_details.port = int(self.ssh_port.text()) if self.ssh_port.text() != '' else None
             self.current_connection_details.ssh_host = self.ssh_ssh_host.text()
             self.current_connection_details.ssh_user = self.ssh_ssh_user.text()
