@@ -2,7 +2,6 @@ from os import path
 from PyQt5.QtWidgets import QWidget, QMessageBox
 from PyQt5 import uic
 from PyQt5.QtCore import Qt
-from connections.mysql_connection import MySQL
 from query_widget import QueryWidget
 from create_database_widget import CreateDatabaseWidget
 from dynamic_label import DynamicLabel
@@ -101,9 +100,8 @@ class MainWidget(QWidget):
         if self.current_view is not None:
             self.current_view.setParent(None)
         widget = CreateDatabaseWidget(self.connection_helper)
-        self.MainFrame.setVisible(False)
         self.current_view = widget
-        self.MainLayout.addWidget(widget)
+        self.MainFrame.layout().addWidget(widget)
 
     def set_query_view(self):
         self.enable_buttons()

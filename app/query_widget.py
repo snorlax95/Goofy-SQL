@@ -29,7 +29,7 @@ class QueryWidget(QWidget):
             QMessageBox.about(self, 'Oops!', f'You have an error: \n {results}')
         else:
             self.table.clear_rows()
-            if self.query[:6] == 'INSERT' or self.query[:6] == 'UPDATE':
+            if self.query[:6] != 'SELECT':
                 self.table.set_headers(['Results'])
                 self.table.set_rows([{'rows': f'Inserted {results} rows'}])
                 self.table.display()

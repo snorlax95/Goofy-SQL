@@ -112,16 +112,16 @@ class MySQL():
             return 'Got error {!r}, errno is {}'.format(e, e.args[0])
 
     def update_query(self, table, column, value, identifier_column, identifier):
-            if table is None:
-                table = self.selected_table
-            update_query = f"UPDATE {table} SET {column}={value} WHERE {identifier_column}={identifier}"
-            cursor = self.connection.cursor(DictCursor)
-            cursor = self.use_database(self.selected_database, cursor)
-            try:
-                affected_rows = cursor.execute(update_query)
-                cursor.commit()
-                cursor.close()
-                return affected_rows
-            except Exception as e:
-                cursor.close()
-                return 'Got error {!r}, errno is {}'.format(e, e.args[0])
+        if table is None:
+            table = self.selected_table
+        update_query = f"UPDATE {table} SET {column}={value} WHERE {identifier_column}={identifier}"
+        cursor = self.connection.cursor(DictCursor)
+        cursor = self.use_database(self.selected_database, cursor)
+        try:
+            affected_rows = cursor.execute(update_query)
+            cursor.commit()
+            cursor.close()
+            return affected_rows
+        except Exception as e:
+            cursor.close()
+            return 'Got error {!r}, errno is {}'.format(e, e.args[0])
