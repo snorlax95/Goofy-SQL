@@ -68,10 +68,12 @@ class MainWindow(QMainWindow):
         file_menu.addAction(self.export_sql_action)
 
     def import_sql(self):
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-        file_name, _ = QFileDialog.getOpenFileName(self, "QFileDialog.getOpenFileName()", "",
-                                                  "All Files (*);;SQL Files (*.sql)", options=options)
+        dialog = QFileDialog()
+        options = dialog.Options()
+        options |= dialog.DontUseNativeDialog
+        dialog.setNameFilter("*.sql")
+        file_name, _ = dialog.getOpenFileName(self, "QFileDialog.getOpenFileName()", "",
+                                              "SQL Files (*.sql)", options=options)
         if file_name:
             f = open(file_name, 'r')
             sql = f.read()
@@ -85,9 +87,7 @@ class MainWindow(QMainWindow):
                     if isinstance(result, str):
                         # query failed, stop import
                         QMessageBox.about(self, 'Oops!', result)
-                        return False;
-
-
+                        return False
 
     def export_sql(self):
         print('exporting')
