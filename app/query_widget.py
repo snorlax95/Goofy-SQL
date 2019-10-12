@@ -33,9 +33,6 @@ class QueryWidget(QWidget):
                 self.table.set_headers(['Results'])
                 self.table.set_rows([{'rows': f'Inserted {results} rows'}])
                 self.table.display()
-            if not len(list(results)):
-                # empty results
-                print(results)
             else:
                 headers = list(results[0].keys())
                 self.table.set_headers(headers)
