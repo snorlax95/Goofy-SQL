@@ -13,8 +13,8 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.title = "Sample App"
-        self.server = None
         self.setAttribute(Qt.WA_DeleteOnClose, True)
+        self.main_view = None
         self.left = 10
         self.top = 10
         self.width = 900
@@ -22,8 +22,11 @@ class MainWindow(QMainWindow):
         self.init_ui()
 
     def closeEvent(self, evt):
-        if self.server is not None:
-            self.server.close()
+        if self.main_view is not None:
+            # we are for sure connected
+            self.main_view.connection_helper.connection.close()
+            if self.main_view.connection_helper.server is not None:
+                self.main_view.connection_helper.server.close()
 
     def init_ui(self):
         uic.loadUi(ui_file, self)
@@ -33,7 +36,6 @@ class MainWindow(QMainWindow):
         connection_view.connected.connect(self.established_connection)
         self.setCentralWidget(connection_view)
 
-    def established_connection(self, connection, connection_details, server):
-        self.server = server
-        main_view = MainWidget(connection, connection_details)
-        self.setCentralWidget(main_view)
+    def established_connection(self, connection_helper):
+        self.main_view = MainWidget(connection_helper)
+        self.setCentralWidget(self.main_view)

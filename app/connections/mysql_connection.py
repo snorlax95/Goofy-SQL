@@ -1,17 +1,42 @@
+import pymysql
+from sshtunnel import SSHTunnelForwarder
 from pymysql.cursors import DictCursor
 
 
 class MySQL():
-    def __init__(self, connection):
-        self.connection = connection
+    def __init__(self):
+        self.connection = None
+        self.server = None
         self.selected_database = None
         self.selected_table = None
 
-    def __exit__(self):
-        self.connection.close()
+    def connect_tcp(self, details):
+        self.connection = pymysql.connect(host=details.host,
+                                          user=details.username,
+                                          password=details.password,
+                                          port=details.port,
+                                          database=details.database)
+        return True
+
+    def connect_ssh(self, details):
+        host = details.host if details.host != details.ssh_host else '127.0.0.1'
+        port = details.port if details.port is not None else 3306
+        ssh_port = details.ssh_port if details.ssh_port is not None else 22
+
+        self.server = SSHTunnelForwarder((details.ssh_host, ssh_port),
+                                         ssh_password=details.ssh_password,
+                                         ssh_username=details.ssh_user,
+                                         remote_bind_address=(host, port))
+
+        self.server.start()
+        self.connection = pymysql.connect(host=host,
+                                          user=details.username,
+                                          password=details.password,
+                                          port=self.server.local_bind_port,
+                                          database=details.database)
+        return True
 
     def create_database(self, name, encoding, collation):
-        print('creating database')
         cursor = self.connection.cursor(DictCursor)
         try:
             cursor.execute(f"CREATE DATABASE {name} SET {encoding} COLLATE {collation}")

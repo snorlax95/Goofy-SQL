@@ -12,12 +12,9 @@ ui_file = path.join(script_dir, "views/MainLayout.ui")
 
 
 class MainWidget(QWidget):
-    def __init__(self, connection, connection_details):
+    def __init__(self, connection_helper):
         super().__init__()
-        self.connection_details = connection_details
-        self.connection_helper = MySQL(connection)
-        self.selected_database = self.connection_details.database
-        self.connection_helper.selected_database = self.selected_database
+        self.connection_helper = connection_helper
         self.databases = []
         self.tables = []
         self.current_view = None
@@ -83,8 +80,7 @@ class MainWidget(QWidget):
 
     def select_database(self):
         self.enable_buttons()
-        self.connection_details.database = self.DatabaseDropdown.currentText()
-        is_valid = self.connection_helper.select_database(self.connection_details.database)
+        is_valid = self.connection_helper.select_database(self.DatabaseDropdown.currentText())
         if is_valid:
             self.refresh_tables()
             self.update_current_view()
