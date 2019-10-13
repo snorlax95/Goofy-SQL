@@ -124,6 +124,19 @@ class MySQL():
             cursor.close()
             return 'Got error {!r}, errno is {}'.format(e, e.args[0])
 
+    def select_total_count(self):
+        count_query = f"SELECT COUNT(*) as count FROM {self.selected_table};"
+        cursor = self.connection.cursor(DictCursor)
+        cursor = self.use_database(self.selected_database, cursor)
+        try:
+            cursor.execute(count_query)
+            result = cursor.fetchone()
+            cursor.close()
+            return result['count']
+        except Exception as e:
+            cursor.close()
+            return 'Got error {!r}, errno is {}'.format(e, e.args[0])
+
     def update_query(self, table, column, value, identifier_column, identifier):
         if table is None:
             table = self.selected_table

@@ -16,6 +16,7 @@ class ContentWidget(QWidget):
         self.interval = 10
         self.current_interval = 0
         self.results_count = 0
+        self.total_count = 0
         self.init_ui()
         self.refresh()
 
@@ -26,8 +27,23 @@ class ContentWidget(QWidget):
         self.ForwardButton.clicked.connect(self.page_forward)
         self.layout().addWidget(self.table)
 
+    def set_results_text(self):
+        if self.total_count <= self.interval:
+            # only one page of results
+            text = f"{self.total_count} rows"
+        else:
+            text = f"{self.current_interval} - {self.current_interval + self.interval} of {self.total_count} rows"
+        self.ResultsText.setText(text)
+
     def refresh(self):
         results = self.connection_helper.select_all(self.current_interval, self.current_interval+self.interval)
+        count = self.connection_helper.select_total_count()
+        if isinstance(count, str):
+            QMessageBox.about(self, 'Oops!', f'You have an error: \n {count}')
+        else:
+            self.total_count = count
+            self.set_results_text()
+
         if isinstance(results, str):
             QMessageBox.about(self, 'Oops!', f'You have an error: \n {results}')
         else:
