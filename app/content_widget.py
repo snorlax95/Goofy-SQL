@@ -13,7 +13,7 @@ class ContentWidget(QWidget):
         super().__init__()
         self.connection_helper = connection_helper
         self.table = ResultsTable()
-        self.interval = 10
+        self.interval = 100
         self.current_interval = 0
         self.results_count = 0
         self.total_count = 0
@@ -39,7 +39,7 @@ class ContentWidget(QWidget):
         self.ResultsText.setText(text)
 
     def refresh(self):
-        results = self.connection_helper.select_all(self.current_interval, self.current_interval+self.interval)
+        results = self.connection_helper.select_all(self.current_interval, self.interval)
         count = self.connection_helper.select_total_count()
         if isinstance(count, str):
             QMessageBox.about(self, 'Oops!', f'You have an error: \n {count}')
@@ -49,7 +49,7 @@ class ContentWidget(QWidget):
 
         if isinstance(results, str):
             QMessageBox.about(self, 'Oops!', f'You have an error: \n {results}')
-        else:
+        elif len(results):
             self.results_count = len(results)
             self.table.clear_rows()
             headers = list(results[0].keys())
@@ -79,3 +79,4 @@ class ContentWidget(QWidget):
 
     def update_connection(self, connection_helper):
         self.connection_helper = connection_helper
+        self.refresh()
