@@ -1,3 +1,4 @@
+import datetime
 from os import path
 from PyQt5.QtWidgets import QWidget, QMessageBox, QHeaderView
 from PyQt5 import uic
@@ -33,9 +34,14 @@ class ResultsTable(QWidget):
     def set_rows(self, rows):
         for idx, row in enumerate(rows):
             items = []
+            date_format = "%Y-%m-%d %H:%M:%S %Z"
             for item in row.values():
                 if isinstance(item, int):
                     items.append(QStandardItem(str(item)))
+                elif isinstance(item, datetime.date):
+                    items.append(QStandardItem(item.strftime(date_format)))
+                elif isinstance(item, datetime.datetime):
+                    items.append(QStandardItem(item.strftime(date_format)))
                 else:
                     items.append(QStandardItem(item))
             self.model.insertRow(idx, items)

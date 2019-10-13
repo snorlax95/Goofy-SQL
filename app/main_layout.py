@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QWidget, QMessageBox
 from PyQt5 import uic
 from PyQt5.QtCore import Qt
 from query_widget import QueryWidget
+from content_widget import ContentWidget
 from create_database_widget import CreateDatabaseWidget
 from dynamic_label import DynamicLabel
 
@@ -119,3 +120,8 @@ class MainWidget(QWidget):
     def set_content_view(self):
         self.enable_buttons()
         self.ContentButton.setEnabled(False)
+        if self.current_view is not None:
+            self.current_view.setParent(None)
+        widget = ContentWidget(self.connection_helper)
+        self.current_view = widget
+        self.MainFrame.layout().addWidget(widget)

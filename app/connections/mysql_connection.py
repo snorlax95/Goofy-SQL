@@ -111,6 +111,19 @@ class MySQL():
             cursor.close()
             return 'Got error {!r}, errno is {}'.format(e, e.args[0])
 
+    def select_all(self, min, max):
+        select_query = f"SELECT * FROM {self.selected_table} LIMIT {min}, {max};"
+        cursor = self.connection.cursor(DictCursor)
+        cursor = self.use_database(self.selected_database, cursor)
+        try:
+            cursor.execute(select_query)
+            results = cursor.fetchall()
+            cursor.close()
+            return results
+        except Exception as e:
+            cursor.close()
+            return 'Got error {!r}, errno is {}'.format(e, e.args[0])
+
     def update_query(self, table, column, value, identifier_column, identifier):
         if table is None:
             table = self.selected_table
@@ -119,7 +132,7 @@ class MySQL():
         cursor = self.use_database(self.selected_database, cursor)
         try:
             affected_rows = cursor.execute(update_query)
-            cursor.commit()
+            self.connection.commit()
             cursor.close()
             return affected_rows
         except Exception as e:
