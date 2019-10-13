@@ -111,8 +111,8 @@ class MySQL():
             cursor.close()
             return 'Got error {!r}, errno is {}'.format(e, e.args[0])
 
-    def select_all(self, min, max):
-        select_query = f"SELECT * FROM {self.selected_table} LIMIT {min}, {max};"
+    def select_all(self, index, interval):
+        select_query = f"SELECT * FROM {self.selected_table} LIMIT {index}, {interval};"
         cursor = self.connection.cursor(DictCursor)
         cursor = self.use_database(self.selected_database, cursor)
         try:
