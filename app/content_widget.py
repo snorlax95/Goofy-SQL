@@ -32,7 +32,10 @@ class ContentWidget(QWidget):
             # only one page of results
             text = f"{self.total_count} rows"
         else:
-            text = f"{self.current_interval} - {self.current_interval + self.interval} of {self.total_count} rows"
+            if (self.current_interval + self.interval) >= self.total_count:
+                text = f"{self.current_interval + 1} - {self.total_count} of {self.total_count} rows"
+            else:
+                text = f"{self.current_interval + 1} - {self.current_interval + self.interval} of {self.total_count} rows"
         self.ResultsText.setText(text)
 
     def refresh(self):
