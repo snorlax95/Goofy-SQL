@@ -1,7 +1,7 @@
 # Crossplatform SQL GUI
 
 Currently there are no great applications for windows, this project
-will provide an easy to use, consistent UI for bot mac and windows
+will provide an easy to use, consistent UI for both mac and windows
 
 
 ## requirements
@@ -19,8 +19,7 @@ command: . run.sh
 
 
 # build
-install pyinstaller
-cd into app
-pyinstaller main.spec
+cd into bin
+command: . build.sh
 
-(build should then be available in dist folder, main.exe)
+(build should then be available in dist folder, main.exe or main.app)

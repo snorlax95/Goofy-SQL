@@ -2,7 +2,7 @@ import datetime
 from os import path
 from PyQt5.QtWidgets import QWidget, QMessageBox, QHeaderView
 from PyQt5 import uic
-from PyQt5.QtGui import QStandardItemModel, QStandardItem
+from PyQt5.QtGui import QStandardItemModel, QStandardItem, QFont
 
 script_dir = path.dirname(__file__)
 ui_file = path.join(script_dir, "views/ResultsTable.ui")
@@ -38,10 +38,15 @@ class ResultsTable(QWidget):
             for item in row.values():
                 if isinstance(item, int):
                     items.append(QStandardItem(str(item)))
-                elif isinstance(item, datetime.date):
+                elif isinstance(item, datetime.date) or isinstance(item, datetime.datetime):
                     items.append(QStandardItem(item.strftime(date_format)))
-                elif isinstance(item, datetime.datetime):
-                    items.append(QStandardItem(item.strftime(date_format)))
+                elif item is None:
+                    font = QFont();
+                    font.setItalic(True);
+                    font.setBold(True)
+                    standard_item = QStandardItem("NULL")
+                    standard_item.setFont(font)
+                    items.append(standard_item)
                 else:
                     items.append(QStandardItem(item))
             self.model.insertRow(idx, items)
