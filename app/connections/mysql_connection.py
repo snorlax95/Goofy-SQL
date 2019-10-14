@@ -10,6 +10,7 @@ class MySQL():
         self.selected_database = None
         self.selected_table = None
         self.charset_collation = {}
+        self.default_charset = None
 
     def connect_tcp(self, details):
         self.connection = pymysql.connect(host=details.host,
@@ -44,10 +45,15 @@ class MySQL():
         cursor.execute("SHOW COLLATION")
         collations = cursor.fetchall()
         cursor.execute("SELECT default_character_set_name FROM information_schema.SCHEMATA")
-        default_charset = cursor.fetchone()
+        default_result = cursor.fetchone()
+        if 'DEFAULT_CHARACTER_SET_NAME' in default_result:
+            default_charset = default_result['DEFAULT_CHARACTER_SET_NAME']
+        else:
+            default_charset = default_result['default_character_set_name']
+
         cursor.close()
         for charset in charsets:
-            self.charset_collation['default'] = default_charset
+            self.default_charset = default_charset
             self.charset_collation[charset['Charset']] = {"collations": [], "default": charset['Default collation']}
         for collation in collations:
             self.charset_collation[collation['Charset']]["collations"].append(collation['Collation'])
@@ -55,7 +61,7 @@ class MySQL():
     def create_database(self, name, encoding, collation):
         cursor = self.connection.cursor(DictCursor)
         try:
-            cursor.execute(f"CREATE DATABASE {name} SET {encoding} COLLATE {collation}")
+            cursor.execute(f"CREATE DATABASE {name} CHARACTER SET {encoding} COLLATE {collation}")
             cursor.close()
             return True
         except Exception as e:

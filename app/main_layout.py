@@ -29,20 +29,33 @@ class MainWidget(QWidget):
         self.DatabaseRefreshButton.clicked.connect(self.refresh_database_options)
         self.DatabaseCreateButton.clicked.connect(self.create_database)
         self.RefreshTables.clicked.connect(self.refresh_tables)
-        self.RefreshTables.setEnabled(False)
 
         self.QueryButton.clicked.connect(self.set_query_view)
-        self.QueryButton.setEnabled(False)
         self.InfoButton.clicked.connect(self.set_info_view)
-        self.InfoButton.setEnabled(False)
         self.ContentButton.clicked.connect(self.set_content_view)
-        self.ContentButton.setEnabled(False)
+
+        self.disable_buttons()
 
     def enable_buttons(self):
         self.RefreshTables.setEnabled(True)
         self.QueryButton.setEnabled(True)
         self.InfoButton.setEnabled(True)
         self.ContentButton.setEnabled(True)
+
+    def disable_buttons(self):
+        self.RefreshTables.setEnabled(False)
+        self.QueryButton.setEnabled(False)
+        self.InfoButton.setEnabled(False)
+        self.ContentButton.setEnabled(False)
+
+    def manage_buttons(self):
+        self.disable_buttons()
+        if self.connection_helper.selected_database is not None:
+            self.RefreshTables.setEnabled(True)
+        if self.connection_helper.selected_table is not None:
+            self.QueryButton.setEnabled(True)
+            self.InfoButton.setEnabled(True)
+            self.ContentButton.setEnabled(True)
 
     def update_current_view(self):
         if self.current_view is not None:
@@ -64,7 +77,10 @@ class MainWidget(QWidget):
             self.LeftBar.addWidget(label)
             self.tables.append(label)
         if self.connection_helper.selected_table is None:
-            self.select_table(tables[0])
+            if tables:
+                self.select_table(tables[0])
+            else:
+                self.manage_buttons()
         else:
             self.select_table(self.connection_helper.selected_table)
             self.select_table(self.connection_helper.selected_table)
@@ -77,6 +93,12 @@ class MainWidget(QWidget):
         self.DatabaseDropdown.currentIndexChanged.connect(self.select_database)
         if self.connection_helper.selected_database is not None:
             self.DatabaseDropdown.setCurrentText(self.connection_helper.selected_database)
+        
+    def new_database(self, name):
+        self.DatabaseDropdown.addItem(name)
+        self.DatabaseDropdown.setCurrentText(name)
+        if self.current_view is not None:
+            self.current_view.setParent(None)
 
     def select_database(self):
         self.enable_buttons()
@@ -101,6 +123,7 @@ class MainWidget(QWidget):
         if self.current_view is not None:
             self.current_view.setParent(None)
         widget = CreateDatabaseWidget(self.connection_helper)
+        widget.created.connect(self.new_database)
         self.current_view = widget
         self.MainFrame.layout().addWidget(widget)
 
