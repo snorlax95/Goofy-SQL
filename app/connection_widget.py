@@ -95,6 +95,7 @@ class ConnectionWidget(QWidget):
                 self.connection_helper.connect_tcp(self.current_connection_details)
             elif self.current_connection_details.connection_type == 'ssh':
                 self.connection_helper.connect_ssh(self.current_connection_details)
+            self.connection_helper.get_charset_collation()
             self.connected.emit(self.connection_helper)
         except Exception as e:
             QMessageBox.about(self, 'Oops!', 'Got error {!r}, errno is {}'.format(e, e.args[0]))

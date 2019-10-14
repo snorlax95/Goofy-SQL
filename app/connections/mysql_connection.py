@@ -9,6 +9,7 @@ class MySQL():
         self.server = None
         self.selected_database = None
         self.selected_table = None
+        self.charset_collation = {}
 
     def connect_tcp(self, details):
         self.connection = pymysql.connect(host=details.host,
@@ -16,7 +17,7 @@ class MySQL():
                                           password=details.password,
                                           port=details.port,
                                           database=details.database)
-        return True
+        return True 
 
     def connect_ssh(self, details):
         host = details.host if details.host != details.ssh_host else '127.0.0.1'
@@ -36,6 +37,21 @@ class MySQL():
                                           database=details.database)
         return True
 
+    def get_charset_collation(self):
+        cursor = self.connection.cursor(DictCursor)
+        cursor.execute("SHOW CHARACTER SET")
+        charsets = cursor.fetchall()
+        cursor.execute("SHOW COLLATION")
+        collations = cursor.fetchall()
+        cursor.execute("SELECT default_character_set_name FROM information_schema.SCHEMATA")
+        default_charset = cursor.fetchone()
+        cursor.close()
+        for charset in charsets:
+            self.charset_collation['default'] = default_charset
+            self.charset_collation[charset['Charset']] = {"collations": [], "default": charset['Default collation']}
+        for collation in collations:
+            self.charset_collation[collation['Charset']]["collations"].append(collation['Collation'])
+    
     def create_database(self, name, encoding, collation):
         cursor = self.connection.cursor(DictCursor)
         try:
