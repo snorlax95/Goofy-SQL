@@ -5,6 +5,7 @@ from PyQt5.QtCore import Qt
 from query_widget import QueryWidget
 from content_widget import ContentWidget
 from create_database_widget import CreateDatabaseWidget
+from create_table_widget import CreateTableWidget
 from dynamic_label import DynamicLabel
 
 script_dir = path.dirname(__file__)
@@ -23,11 +24,12 @@ class MainWidget(QWidget):
     def init_ui(self):
         uic.loadUi(ui_file, self)
         self.set_database_options()
-        self.LeftBar.setAlignment(Qt.AlignTop)
+        self.LeftBar.layout().setAlignment(Qt.AlignTop)
 
         # TopBar buttons
         self.DatabaseRefreshButton.clicked.connect(self.refresh_database_options)
         self.DatabaseCreateButton.clicked.connect(self.create_database)
+        self.TableCreateButton.clicked.connect(self.create_table)
         self.RefreshTables.clicked.connect(self.refresh_tables)
 
         self.QueryButton.clicked.connect(self.set_query_view)
@@ -38,12 +40,14 @@ class MainWidget(QWidget):
 
     def enable_buttons(self):
         self.RefreshTables.setEnabled(True)
+        self.TableCreateButton.setEnabled(True)
         self.QueryButton.setEnabled(True)
         self.InfoButton.setEnabled(True)
         self.ContentButton.setEnabled(True)
 
     def disable_buttons(self):
         self.RefreshTables.setEnabled(False)
+        self.TableCreateButton.setEnabled(False)
         self.QueryButton.setEnabled(False)
         self.InfoButton.setEnabled(False)
         self.ContentButton.setEnabled(False)
@@ -52,6 +56,7 @@ class MainWidget(QWidget):
         self.disable_buttons()
         if self.connection_helper.selected_database is not None:
             self.RefreshTables.setEnabled(True)
+            self.TableCreateButton.setEnabled(True)
         if self.connection_helper.selected_table is not None:
             self.QueryButton.setEnabled(True)
             self.InfoButton.setEnabled(True)
@@ -74,7 +79,7 @@ class MainWidget(QWidget):
         for table in tables:
             label = DynamicLabel(table)
             label.clicked.connect(self.select_table)
-            self.LeftBar.addWidget(label)
+            self.LeftBar.layout().addWidget(label)
             self.tables.append(label)
         if self.connection_helper.selected_table is None:
             if tables:
@@ -82,7 +87,6 @@ class MainWidget(QWidget):
             else:
                 self.manage_buttons()
         else:
-            self.select_table(self.connection_helper.selected_table)
             self.select_table(self.connection_helper.selected_table)
 
     def set_database_options(self):
@@ -93,12 +97,6 @@ class MainWidget(QWidget):
         self.DatabaseDropdown.currentIndexChanged.connect(self.select_database)
         if self.connection_helper.selected_database is not None:
             self.DatabaseDropdown.setCurrentText(self.connection_helper.selected_database)
-        
-    def new_database(self, name):
-        self.DatabaseDropdown.addItem(name)
-        self.DatabaseDropdown.setCurrentText(name)
-        if self.current_view is not None:
-            self.current_view.setParent(None)
 
     def select_database(self):
         self.enable_buttons()
@@ -117,13 +115,33 @@ class MainWidget(QWidget):
                 self.connection_helper.selected_table = name
         self.update_current_view()
 
+    def new_database(self, name):
+        self.DatabaseDropdown.addItem(name)
+        self.DatabaseDropdown.setCurrentText(name)
+        if self.current_view is not None:
+            self.current_view.setParent(None)
+
+    def new_table(self, name):
+        self.refresh_tables()
+        self.select_table(name)
+        # switch to structure view when that is created
+        self.set_content_view()
+
     def create_database(self):
-        if self.connection_helper.selected_database is not None:
-            self.enable_buttons()
+        self.manage_buttons()
         if self.current_view is not None:
             self.current_view.setParent(None)
         widget = CreateDatabaseWidget(self.connection_helper)
         widget.created.connect(self.new_database)
+        self.current_view = widget
+        self.MainFrame.layout().addWidget(widget)
+
+    def create_table(self):
+        self.manage_buttons()
+        if self.current_view is not None:
+            self.current_view.setParent(None)
+        widget = CreateTableWidget(self.connection_helper)
+        widget.created.connect(self.new_table)
         self.current_view = widget
         self.MainFrame.layout().addWidget(widget)
 

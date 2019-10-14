@@ -67,6 +67,17 @@ class MySQL():
         except Exception as e:
             return 'Got error {!r}, errno is {}'.format(e, e.args[0])
 
+    def create_table(self, name, encoding, collation):
+        cursor = self.connection.cursor(DictCursor)
+        cursor = self.use_database(self.selected_database, cursor)
+        try:
+            cursor.execute(f"CREATE TABLE {name} (id INT NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)) \
+                CHARACTER SET {encoding} COLLATE {collation}")
+            cursor.close()
+            return True
+        except Exception as e:
+            return 'Got error {!r}, errno is {}'.format(e, e.args[0])
+
     def select_database(self, db_name):
         cursor = self.connection.cursor(DictCursor)
         cursor = self.use_database(db_name, cursor)

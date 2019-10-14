@@ -23,7 +23,7 @@
    <item row="1" column="0">
     <layout class="QFormLayout" name="formLayout">
      <item row="0" column="1">
-      <widget class="QLineEdit" name="DatabaseName">
+      <widget class="QLineEdit" name="TableName">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -46,7 +46,7 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QComboBox" name="DatabaseEncoding">
+      <widget class="QComboBox" name="TableEncoding">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -62,7 +62,7 @@
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QComboBox" name="DatabaseCollation">
+      <widget class="QComboBox" name="TableCollation">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -92,7 +92,7 @@
       </widget>
      </item>
      <item row="4" column="1">
-      <widget class="QPushButton" name="CreateDatabaseButton">
+      <widget class="QPushButton" name="CreateTableButton">
        <property name="minimumSize">
         <size>
          <width>100</width>
@@ -105,7 +105,7 @@
       </widget>
      </item>
      <item row="3" column="1">
-      <widget class="QComboBox" name="comboBox">
+      <widget class="QComboBox" name="TableType">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
          <horstretch>0</horstretch>
