@@ -22,6 +22,10 @@ class CreateTableWidget(QWidget):
         self.CreateTableButton.clicked.connect(self.create_table)
         self.TableName.setFocus()
 
+        self.TableType.clear()
+        self.TableType.addItems(self.connection_helper.engines)
+        self.TableType.setCurrentText(self.connection_helper.default_engine)
+
         charset_collation = self.connection_helper.charset_collation
         self.TableEncoding.clear()
         self.TableEncoding.addItems(charset_collation.keys())
@@ -40,14 +44,17 @@ class CreateTableWidget(QWidget):
         name = self.TableName.text()
         encoding = self.TableEncoding.currentText()
         collation = self.TableCollation.currentText()
+        engine = self.TableType.currentText()
         if name == '' or name is None:
            QMessageBox.about(self, 'Oops!', "Please enter a name")
         elif encoding == '' or encoding is None:
             QMessageBox.about(self, 'Oops!', "Please select an encoding option")
         elif collation == '' or collation is None:
             QMessageBox.about(self, 'Oops!', "Please select a collation option")
+        elif engine == '' or engine is None:
+            QMessageBox.about(self, 'Oops!', "Please select an engine option")
         else:
-            created = self.connection_helper.create_table(name, encoding, collation)
+            created = self.connection_helper.create_table(name, encoding, collation, engine)
             if isinstance(created, str):
                 QMessageBox.about(self, 'Oops!', f'You have an error: \n {created}')
             else:

@@ -11,6 +11,8 @@ class MySQL():
         self.selected_table = None
         self.charset_collation = {}
         self.default_charset = None
+        self.engines = []
+        self.default_engine = None
 
     def connect_tcp(self, details):
         self.connection = pymysql.connect(host=details.host,
@@ -38,7 +40,7 @@ class MySQL():
                                           database=details.database)
         return True
 
-    def get_charset_collation(self):
+    def get_database_options(self):
         cursor = self.connection.cursor(DictCursor)
         cursor.execute("SHOW CHARACTER SET")
         charsets = cursor.fetchall()
@@ -50,6 +52,14 @@ class MySQL():
             default_charset = default_result['DEFAULT_CHARACTER_SET_NAME']
         else:
             default_charset = default_result['default_character_set_name']
+        
+        cursor.execute("SHOW ENGINES")
+        engines = cursor.fetchall()
+        for engine in engines:
+            if engine['Support'] != 'NO':
+                self.engines.append(engine['Engine'])
+            if engine['Support'] == 'DEFAULT':
+                self.default_engine = engine['Engine']
 
         cursor.close()
         for charset in charsets:
@@ -67,12 +77,12 @@ class MySQL():
         except Exception as e:
             return 'Got error {!r}, errno is {}'.format(e, e.args[0])
 
-    def create_table(self, name, encoding, collation):
+    def create_table(self, name, encoding, collation, engine):
         cursor = self.connection.cursor(DictCursor)
         cursor = self.use_database(self.selected_database, cursor)
         try:
             cursor.execute(f"CREATE TABLE {name} (id INT NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)) \
-                CHARACTER SET {encoding} COLLATE {collation}")
+                ENGINE={engine} CHARACTER SET {encoding} COLLATE {collation}")
             cursor.close()
             return True
         except Exception as e:
