@@ -79,6 +79,7 @@ class MainWidget(QWidget):
         for table in tables:
             label = DynamicLabel(table)
             label.clicked.connect(self.select_table)
+            label.deleted.connect(self.delete_table)
             self.LeftBar.layout().addWidget(label)
             self.tables.append(label)
         if self.connection_helper.selected_table is None:
@@ -101,7 +102,7 @@ class MainWidget(QWidget):
     def select_database(self):
         self.enable_buttons()
         is_valid = self.connection_helper.select_database(self.DatabaseDropdown.currentText())
-        if is_valid:
+        if is_valid is True:
             self.refresh_tables()
             self.update_current_view()
         else:
@@ -114,6 +115,17 @@ class MainWidget(QWidget):
                 table.select()
                 self.connection_helper.selected_table = name
         self.update_current_view()
+
+    def delete_table(self, name):
+        reply = QMessageBox.question(self, 'Wait!', f"Are you sure you want to delete the table {name}?", 
+        QMessageBox.Yes|QMessageBox.No)
+
+        if reply == QMessageBox.Yes:
+            result = self.connection_helper.delete_table(name)
+            if result is True:
+                self.refresh_tables()
+            else:
+                QMessageBox.about(self, 'Oops!', "Could not delete table")
 
     def new_database(self, name):
         self.DatabaseDropdown.addItem(name)

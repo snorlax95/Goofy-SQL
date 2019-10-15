@@ -88,6 +88,16 @@ class MySQL():
         except Exception as e:
             return 'Got error {!r}, errno is {}'.format(e, e.args[0])
 
+    def delete_table(self, name):
+        cursor = self.connection.cursor(DictCursor)
+        cursor = self.use_database(self.selected_database, cursor)
+        try:
+            cursor.execute(f"DROP TABLE IF EXISTS {name}")
+            cursor.close()
+            return True
+        except Exception as e:
+            return 'Got error {!r}, errno is {}'.format(e, e.args[0])
+
     def select_database(self, db_name):
         cursor = self.connection.cursor(DictCursor)
         cursor = self.use_database(db_name, cursor)

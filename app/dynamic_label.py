@@ -28,8 +28,7 @@ class DynamicLabel(QLabel):
         self.menu.setStyleSheet("background-color: white; color:black;")
 
     def context_menu(self, point):
-        delete_action = QAction('Delete Item')
-        delete_action.setStatusTip('Delete item')
+        delete_action = QAction('Delete')
         delete_action.triggered.connect(self.delete_item)
         self.menu.addAction(delete_action)
         self.menu.exec_(self.mapToGlobal(point))
