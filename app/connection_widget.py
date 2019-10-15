@@ -35,7 +35,7 @@ class ConnectionWidget(QWidget):
         self.SavedConnections.setAlignment(Qt.AlignTop)
 
     def refresh_saved_connections(self):
-        for connection in self.saved_connection_labels:
+        for key, connection in self.saved_connection_labels.items():
             connection.setParent(None)
 
         self.saved_connection_labels = {}
