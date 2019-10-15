@@ -24,6 +24,7 @@ class ConnectionWidget(QWidget):
 
         self.init_ui()
         self.get_connections()
+        self.open_connection(None)
 
     def init_ui(self):
         uic.loadUi(ui_file, self)
