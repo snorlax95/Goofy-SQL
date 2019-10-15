@@ -39,3 +39,5 @@ command: . build.sh
 * Sort results table by column asc/desc (it's clickable, but since everything are strings..numbers are sorted incorrectly)
 
 * Edit fields in results table
+
+* in ssh connect, allow user to select ssh key instead of password

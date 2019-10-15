@@ -3,6 +3,7 @@ from os import path
 from PyQt5.QtWidgets import QWidget, QMessageBox, QHeaderView
 from PyQt5 import uic
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QFont
+from PyQt5.QtCore import Qt
 
 script_dir = path.dirname(__file__)
 ui_file = path.join(script_dir, "views/ResultsTable.ui")
@@ -17,6 +18,7 @@ class ResultsTable(QWidget):
     def init_ui(self):
         uic.loadUi(ui_file, self)
         self.ResultsTable.setSortingEnabled(True)
+        # self.ResultsTable.sortByColumn(0, Qt.AscendingOrder)
 
     def set_headers(self, headers):
         headers.append('')
