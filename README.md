@@ -27,9 +27,6 @@ command: . build.sh
 
 
 # Features needed
-
-* ContentView (Refresh isn’t getting the correct results when new rows are available)
-
 * export results table as xml/csv
 
 * make columns expand better, right now everything is uniform but longer entries should be a bit bigger (min/max columns)

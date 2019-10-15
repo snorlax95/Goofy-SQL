@@ -10,7 +10,6 @@ class DynamicLabel(QLabel):
     def __init__(self, name):
         super().__init__()
         self.setText(name)
-        self.setMargin(5)
         self.name = name
         self.menu = QMenu(self)
         self.selected = False
