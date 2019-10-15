@@ -16,6 +16,7 @@ class ResultsTable(QWidget):
 
     def init_ui(self):
         uic.loadUi(ui_file, self)
+        self.ResultsTable.setSortingEnabled(True)
 
     def set_headers(self, headers):
         headers.append('')

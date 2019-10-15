@@ -30,14 +30,12 @@ command: . build.sh
 
 * ContentView (Refresh isn’t getting the correct results when new rows are available)
 
-* Make Left bar on both ConnectionView and MainLayout be scrollable
-
 * export results table as xml/csv
 
 * make columns expand better, right now everything is uniform but longer entries should be a bit bigger (min/max columns)
 
 * style table items by type..color coded if possible. Strings, Integer, NULL, and datetimes could be styled different
 
-* Sort results table by column asc/desc
+* Sort results table by column asc/desc (it's clickable, but since everything are strings..numbers are sorted incorrectly)
 
 * Edit fields in results table

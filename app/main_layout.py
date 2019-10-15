@@ -36,7 +36,7 @@ class MainWidget(QWidget):
         self.InfoButton.clicked.connect(self.set_info_view)
         self.ContentButton.clicked.connect(self.set_content_view)
 
-        self.disable_buttons()
+        self.manage_buttons()
 
     def enable_buttons(self):
         self.RefreshTables.setEnabled(True)
@@ -56,9 +56,9 @@ class MainWidget(QWidget):
         self.disable_buttons()
         if self.connection_helper.selected_database is not None:
             self.RefreshTables.setEnabled(True)
+            self.QueryButton.setEnabled(True)
             self.TableCreateButton.setEnabled(True)
         if self.connection_helper.selected_table is not None:
-            self.QueryButton.setEnabled(True)
             self.InfoButton.setEnabled(True)
             self.ContentButton.setEnabled(True)
 
@@ -93,9 +93,9 @@ class MainWidget(QWidget):
     def set_database_options(self):
         databases = self.connection_helper.get_databases()
         self.DatabaseDropdown.clear()
+        self.DatabaseDropdown.currentIndexChanged.connect(self.select_database)
         self.DatabaseDropdown.addItems(databases['common'])
         self.DatabaseDropdown.addItems(databases['unique'])
-        self.DatabaseDropdown.currentIndexChanged.connect(self.select_database)
         if self.connection_helper.selected_database is not None:
             self.DatabaseDropdown.setCurrentText(self.connection_helper.selected_database)
 
