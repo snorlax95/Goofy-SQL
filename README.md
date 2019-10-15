@@ -27,9 +27,6 @@ command: . build.sh
 
 
 # Features needed
-* Delete saved connection details
-
-* Delete table, column, and rows (right click options)
 
 * ContentView (Refresh isn’t getting the correct results when new rows are available)
 

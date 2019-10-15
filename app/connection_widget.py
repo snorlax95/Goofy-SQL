@@ -43,8 +43,14 @@ class ConnectionWidget(QWidget):
         for connection in self.saved_connections.values():
             label = DynamicLabel(connection['name'])
             label.clicked.connect(self.open_saved_connection)
+            label.deleted.connect(self.delete_connection)
             self.SavedConnections.addWidget(label)
             self.saved_connection_labels[connection['name']] = label
+
+    def delete_connection(self, name):
+        del self.saved_connections[name]
+        self.refresh_saved_connections()
+        self.settings.setValue("connections", json.dumps(self.saved_connections))
 
     def save_connection(self):
         self.get_input_values()
