@@ -15,6 +15,7 @@ class ResultsTable(QWidget):
         super().__init__()
         self.model = QStandardItemModel()
         self.model.itemChanged.connect(self.edit_cell)
+        self.columns = []
 
         # self.database = QSqlDatabase("QPSQL")
         # self.database.setDatabaseName('pydb')
@@ -36,17 +37,21 @@ class ResultsTable(QWidget):
 
     def edit_cell(self, item):
         # get column, cell value, and the row
+        # should store header/row 
         # use this info to determine the correct schema (so we can convert items)
         # then UPDATE command
         # revert update command if failed to reset cell and display warning message
-        print(item.row())
-        print(item.column())
-        print(item.text())
-        print(item.data())
+        column = item.column()
+        row = item.row()
+        value = item.text()
+
+        rows = [self.model.item(row, column) for column in range(self.model.columnCount())]
+        column = self.model.horizontalHeaderItem(item.column())
 
     def set_headers(self, headers):
-        headers.append('')
-        self.model.setHorizontalHeaderLabels(headers)
+        self.headers = headers
+        for idx, header in enumerate(headers):
+            self.model.setHorizontalHeaderItem(idx, QStandardItem(header))
 
     def set_blank(self):
         self.set_headers(['Results'])
