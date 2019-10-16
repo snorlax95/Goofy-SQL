@@ -10,13 +10,14 @@ class DynamicLabel(QLabel):
     def __init__(self, name):
         super().__init__()
         self.setText(name)
+        self.setMargin(3)
         self.name = name
         self.menu = QMenu(self)
         self.selected = False
         self.setSizePolicy(QSizePolicy.Minimum,
                            QSizePolicy.Minimum)
-        self.setMinimumHeight(25)
-        self.setMaximumHeight(25)
+        self.setMinimumHeight(22)
+        self.setMaximumHeight(22)
         font = QFont()
         font.setPointSize(12)
         self.setFont(font)

@@ -38,3 +38,6 @@ command: . build.sh
 * Edit fields in results table
 
 * in ssh connect, allow user to select ssh key instead of password
+
+* in results table find way to use QSqlTableModel as it contains all the editing functionality we want out of the box (needs drivers intalled..would need to be included with app..commented out code is left in case we use it)
+(only downside is it doesn't give us full control..leaving everything to qt and limiting to only 3 or 4 database types, also we have more control over styling)
