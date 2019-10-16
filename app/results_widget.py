@@ -45,7 +45,7 @@ class ResultsTable(QWidget):
         row = item.row()
         value = item.text()
 
-        rows = [self.model.item(row, column) for column in range(self.model.columnCount())]
+        rows = [self.model.item(row, column).text() for column in range(self.model.columnCount())]
         column = self.model.horizontalHeaderItem(item.column())
 
     def set_headers(self, headers):
