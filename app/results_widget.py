@@ -11,11 +11,12 @@ ui_file = path.join(script_dir, "views/ResultsTable.ui")
 
 
 class ResultsTable(QWidget):
-    def __init__(self):
+    def __init__(self, connection_helper):
         super().__init__()
+        self.connection_helper = connection_helper
         self.model = QStandardItemModel()
         self.model.itemChanged.connect(self.edit_cell)
-        self.columns = []
+        self.table_schema = None
 
         # self.database = QSqlDatabase("QPSQL")
         # self.database.setDatabaseName('pydb')
@@ -36,17 +37,18 @@ class ResultsTable(QWidget):
         # self.ResultsTable.sortByColumn(0, Qt.AscendingOrder)
 
     def edit_cell(self, item):
-        # get column, cell value, and the row
-        # should store header/row 
         # use this info to determine the correct schema (so we can convert items)
         # then UPDATE command
         # revert update command if failed to reset cell and display warning message
         column = item.column()
         row = item.row()
-        value = item.text()
+        value = item.data(Qt.EditRole)
 
-        rows = [self.model.item(row, column).text() for column in range(self.model.columnCount())]
-        column = self.model.horizontalHeaderItem(item.column())
+        row_values = [self.model.item(row, column).text() for column in range(self.model.columnCount())]
+        column_value = self.model.horizontalHeaderItem(column)
+
+    def set_schema(self, table_schema):
+        self.table_schema = table_schema
 
     def set_headers(self, headers):
         self.headers = headers
@@ -57,32 +59,31 @@ class ResultsTable(QWidget):
         self.set_headers(['Results'])
         self.set_rows([{'value': 'No Results'}])
 
-    def clear_rows(self):
-        self.model.removeRows(0, self.model.rowCount())
-
-    def clear_headers(self):
-        self.model.setHorizontalHeaderLabels([])
+    def clear(self):
+        self.model.clear()
 
     def set_rows(self, rows):
         for idx, row in enumerate(rows):
             items = []
             date_format = "%Y-%m-%d %H:%M:%S %Z"
             for item in row.values():
+                standard_item = QStandardItem()
                 if isinstance(item, int):
-                    standard_item = QStandardItem()
-                    standard_item.setData(QVariant(item), Qt.DisplayRole)
+                    standard_item.setData(QVariant(item), Qt.EditRole)
                     items.append(standard_item)
                 elif isinstance(item, datetime.date) or isinstance(item, datetime.datetime):
-                    items.append(QStandardItem(item.strftime(date_format)))
+                    standard_item.setData(QVariant(item.strftime(date_format)), Qt.EditRole)
+                    items.append(standard_item)
                 elif item is None:
                     font = QFont();
                     font.setItalic(True);
                     font.setBold(True)
-                    standard_item = QStandardItem("NULL")
+                    standard_item.setData(QVariant("NULL"), Qt.EditRole)
                     standard_item.setFont(font)
                     items.append(standard_item)
                 else:
-                    items.append(QStandardItem(item))
+                    standard_item.setData(QVariant(item), Qt.EditRole)
+                    items.append(standard_item)
             self.model.insertRow(idx, items)
 
     def display(self):

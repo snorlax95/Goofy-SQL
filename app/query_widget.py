@@ -39,5 +39,5 @@ class QueryWidget(QWidget):
                 self.table.set_rows(results)
                 self.table.display()
 
-    def update_connection(self, connection_helper):
-        self.connection_helper = connection_helper
+    def update(self):
+        pass

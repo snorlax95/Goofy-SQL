@@ -4,6 +4,7 @@ from PyQt5 import uic
 from PyQt5.QtCore import Qt
 from query_widget import QueryWidget
 from content_widget import ContentWidget
+from schema_widget import SchemaWidget
 from create_database_widget import CreateDatabaseWidget
 from create_table_widget import CreateTableWidget
 from dynamic_label import DynamicLabel
@@ -35,6 +36,7 @@ class MainWidget(QWidget):
         self.QueryButton.clicked.connect(self.set_query_view)
         self.InfoButton.clicked.connect(self.set_info_view)
         self.ContentButton.clicked.connect(self.set_content_view)
+        self.SchemaButton.clicked.connect(self.set_schema_view)
 
         self.manage_buttons()
 
@@ -44,6 +46,7 @@ class MainWidget(QWidget):
         self.QueryButton.setEnabled(True)
         self.InfoButton.setEnabled(True)
         self.ContentButton.setEnabled(True)
+        self.SchemaButton.setEnabled(True)
 
     def disable_buttons(self):
         self.RefreshTables.setEnabled(False)
@@ -51,6 +54,7 @@ class MainWidget(QWidget):
         self.QueryButton.setEnabled(False)
         self.InfoButton.setEnabled(False)
         self.ContentButton.setEnabled(False)
+        self.SchemaButton.setEnabled(True)
 
     def manage_buttons(self):
         self.disable_buttons()
@@ -61,10 +65,7 @@ class MainWidget(QWidget):
         if self.connection_helper.selected_table is not None:
             self.InfoButton.setEnabled(True)
             self.ContentButton.setEnabled(True)
-
-    def update_current_view(self):
-        if self.current_view is not None:
-            self.current_view.update_connection(self.connection_helper)
+            self.SchemaButton.setEnabled(True)
 
     def refresh_database_options(self):
         self.DatabaseDropdown.currentIndexChanged.disconnect()
@@ -104,7 +105,6 @@ class MainWidget(QWidget):
         is_valid = self.connection_helper.select_database(self.DatabaseDropdown.currentText())
         if is_valid is True:
             self.refresh_tables()
-            self.update_current_view()
         else:
             QMessageBox.about(self, 'Oops!', "Error trying to connect to database")
 
@@ -170,6 +170,15 @@ class MainWidget(QWidget):
         self.enable_buttons()
         self.InfoButton.setEnabled(False)
 
+    def set_schema_view(self):
+        self.enable_buttons()
+        self.SchemaButton.setEnabled(False)
+        if self.current_view is not None:
+            self.current_view.setParent(None)
+        widget = SchemaWidget(self.connection_helper)
+        self.current_view = widget
+        self.MainFrame.layout().addWidget(widget)
+
     def set_content_view(self):
         self.enable_buttons()
         self.ContentButton.setEnabled(False)
@@ -178,3 +187,7 @@ class MainWidget(QWidget):
         widget = ContentWidget(self.connection_helper)
         self.current_view = widget
         self.MainFrame.layout().addWidget(widget)
+
+    def update_current_view(self):
+        if self.current_view is not None:
+            self.current_view.update()

@@ -164,6 +164,17 @@ class MySQL():
             cursor.close()
             return 'Got error {!r}, errno is {}'.format(e, e.args[0])
 
+    def get_table_schema(self):
+        cursor = self.connection.cursor(DictCursor)
+        try:
+            cursor.execute(f"DESCRIBE {self.selected_table}")
+            results = cursor.fetchall()
+            cursor.close()
+            return results
+        except Exception as e:
+            cursor.close()
+            return 'Got error {!r}, errno is {}'.format(e, e.args[0])
+
     def select_all(self, index, interval):
         select_query = f"SELECT * FROM {self.selected_table} LIMIT {index}, {interval};"
         self.connection.autocommit(True)
@@ -199,6 +210,7 @@ class MySQL():
     def update_query(self, table, column, value, identifier_column, identifier):
         if table is None:
             table = self.selected_table
+
         update_query = f"UPDATE {table} SET {column}={value} WHERE {identifier_column}={identifier}"
         cursor = self.connection.cursor(DictCursor)
         cursor = self.use_database(self.selected_database, cursor)

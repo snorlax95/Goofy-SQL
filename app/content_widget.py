@@ -12,7 +12,8 @@ class ContentWidget(QWidget):
     def __init__(self, connection_helper):
         super().__init__()
         self.connection_helper = connection_helper
-        self.table = ResultsTable()
+        self.table = ResultsTable(self.connection_helper)
+        self.current_table = self.connection_helper.selected_table
         self.interval = 100
         self.current_interval = 0
         self.results_count = 0
@@ -41,19 +42,21 @@ class ContentWidget(QWidget):
     def refresh(self):
         results = self.connection_helper.select_all(self.current_interval, self.interval)
         count = self.connection_helper.select_total_count()
+        schema = self.connection_helper.get_table_schema()
+
         if isinstance(count, str):
             QMessageBox.about(self, 'Oops!', f'You have an error: \n {count}')
+        elif isinstance(schema, str):
+            QMessageBox.about(self, 'Oops!', f'You have an error: \n {schema}')
+        elif isinstance(results, str):
+            QMessageBox.about(self, 'Oops!', f'You have an error: \n {results}')
         else:
             self.total_count = count
             self.set_results_text()
-
-        if isinstance(results, str):
-            QMessageBox.about(self, 'Oops!', f'You have an error: \n {results}')
-        elif len(results):
             self.results_count = len(results)
-            self.table.clear_rows()
-            headers = list(results[0].keys())
-            self.table.set_headers(headers)
+            self.table.clear()
+            self.table.set_headers([header['Field'] for header in schema])
+            self.table.set_schema(schema)
             self.table.set_rows(results)
             self.table.display()
             self.manage_buttons()
@@ -77,6 +80,7 @@ class ContentWidget(QWidget):
         self.current_interval += self.interval
         self.refresh()
 
-    def update_connection(self, connection_helper):
-        self.connection_helper = connection_helper
+    def update(self):
+        if self.current_table != self.connection_helper.selected_table:
+            self.current_interval = 0
         self.refresh()
