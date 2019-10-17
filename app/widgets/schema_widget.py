@@ -1,7 +1,7 @@
 from os import path
 from PyQt5.QtWidgets import QWidget, QMessageBox
 from PyQt5 import uic
-from results_widget import ResultsTable
+from .results_widget import ResultsTable
 
 script_dir = path.dirname(__file__)
 ui_path = "views/SchemaView.ui"

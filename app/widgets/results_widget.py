@@ -87,6 +87,7 @@ class ResultsTable(QWidget):
                     standard_item.setFont(font)
                     items.append(standard_item)
                 else:
+                    print(type(item))
                     standard_item.setData(QVariant(item), Qt.EditRole)
                     items.append(standard_item)
             self.model.insertRow(idx, items)

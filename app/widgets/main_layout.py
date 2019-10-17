@@ -2,12 +2,12 @@ from os import path
 from PyQt5.QtWidgets import QWidget, QMessageBox
 from PyQt5 import uic
 from PyQt5.QtCore import Qt
-from query_widget import QueryWidget
-from content_widget import ContentWidget
-from schema_widget import SchemaWidget
-from create_database_widget import CreateDatabaseWidget
-from create_table_widget import CreateTableWidget
-from dynamic_label import DynamicLabel
+from .query_widget import QueryWidget
+from .content_widget import ContentWidget
+from .schema_widget import SchemaWidget
+from .create_database_widget import CreateDatabaseWidget
+from .create_table_widget import CreateTableWidget
+from .dynamic_label import DynamicLabel
 
 script_dir = path.dirname(__file__)
 ui_file = path.join(script_dir, "views/MainLayout.ui")

@@ -3,9 +3,9 @@ from os import path
 from PyQt5.QtWidgets import QWidget, QLabel, QMessageBox
 from PyQt5 import uic
 from PyQt5.QtCore import pyqtSignal, QSettings, Qt
-from connections.mysql_connection import MySQL
-from models.connection import ConnectionModel
-from dynamic_label import DynamicLabel
+from .connections.mysql_connection import MySQL
+from .models.connection import ConnectionModel
+from .dynamic_label import DynamicLabel
 
 script_dir = path.dirname(__file__)
 ui_file = path.join(script_dir, "views/ConnectionView.ui")

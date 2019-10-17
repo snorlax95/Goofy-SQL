@@ -3,8 +3,8 @@ from PyQt5.QtWidgets import QMainWindow, QAction, QFileDialog, QMessageBox
 from PyQt5 import uic
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt, pyqtSignal
-from connection_widget import ConnectionWidget
-from main_layout import MainWidget
+from .connection_widget import ConnectionWidget
+from .main_layout import MainWidget
 
 script_dir = path.dirname(__file__)
 ui_file = path.join(script_dir, "views/MainWindow.ui")

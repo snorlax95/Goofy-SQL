@@ -1,7 +1,7 @@
 source fbsenv/bin/activate
 cd ../app
 
-pyinstaller --onefile --windowed --add-data="assets/*.png:assets" --add-data="views/*.ui:views" \
+pyinstaller --onefile --windowed --add-data="widgets/assets/*.png:widgets/assets" --add-data="widgets/views/*.ui:widgets/views" \
 --icon="icon.ico" \
 main.py
 
