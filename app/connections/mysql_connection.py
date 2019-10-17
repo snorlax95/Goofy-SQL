@@ -141,13 +141,6 @@ class MySQL():
         cursor.close()
         return table_names
 
-    def get_table_schema(self, table):
-        cursor = self.connection.cursor(DictCursor)
-        cursor.execute(f"DESCRIBE {table}")
-        schema = cursor.fetchall()
-        cursor.close()
-        return schema
-
     def custom_query(self, query):
         cursor = self.connection.cursor(DictCursor)
         cursor = self.use_database(self.selected_database, cursor)
@@ -174,6 +167,9 @@ class MySQL():
         except Exception as e:
             cursor.close()
             return 'Got error {!r}, errno is {}'.format(e, e.args[0])
+
+    def convert_value(self):
+        pass
 
     def select_all(self, index, interval):
         select_query = f"SELECT * FROM {self.selected_table} LIMIT {index}, {interval};"

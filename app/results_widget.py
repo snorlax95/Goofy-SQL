@@ -19,15 +19,21 @@ class ResultsTable(QWidget):
         self.table_schema = None
 
         # self.database = QSqlDatabase("QPSQL")
-        # self.database.setDatabaseName('pydb')
         # self.database.setHostName('127.0.0.1')
         # self.database.setUserName('root')
         # self.database.setPassword('root')
         # self.database.setPort(5432)
-        # self.sql_model = QSqlTableModel(self, self.database)
+        # self.database.setDatabaseName('pydb')
+        # self.database.open()
+        # self.sql_model = QSqlTableModel(None, self.database)
+        # self.sql_model.setHeaderData(0, Qt.Horizontal, "id")
         # self.sql_model.setTable('testing')
+        # print(self.sql_model.selectStatement())
         # self.sql_model.select()
-        # self.sql_model.setHeaderData(0, Qt.Horizontal, QVariant("id"))
+        # print(self.sql_model.selectStatement())
+        # print(self.sql_model.lastError().text())
+        # print(self.sql_model.rowCount())
+        # print(self.sql_model.columnCount())
 
         self.init_ui()
 
@@ -37,12 +43,14 @@ class ResultsTable(QWidget):
         # self.ResultsTable.sortByColumn(0, Qt.AscendingOrder)
 
     def edit_cell(self, item):
-        # use this info to determine the correct schema (so we can convert items)
-        # then UPDATE command
+        # if key exists, use that as identifier
+        # if key does not exist, use every row as identifier and LIMIT 1
+        # get type of columns to convert values accordingly...convert method should be in connection helper
         # revert update command if failed to reset cell and display warning message
         column = item.column()
         row = item.row()
         value = item.data(Qt.EditRole)
+        print(value)
 
         row_values = [self.model.item(row, column).text() for column in range(self.model.columnCount())]
         column_value = self.model.horizontalHeaderItem(column)
@@ -68,15 +76,12 @@ class ResultsTable(QWidget):
             date_format = "%Y-%m-%d %H:%M:%S %Z"
             for item in row.values():
                 standard_item = QStandardItem()
-                if isinstance(item, int):
-                    standard_item.setData(QVariant(item), Qt.EditRole)
-                    items.append(standard_item)
-                elif isinstance(item, datetime.date) or isinstance(item, datetime.datetime):
+                if isinstance(item, datetime.date) or isinstance(item, datetime.datetime):
                     standard_item.setData(QVariant(item.strftime(date_format)), Qt.EditRole)
                     items.append(standard_item)
                 elif item is None:
-                    font = QFont();
-                    font.setItalic(True);
+                    font = QFont()
+                    font.setItalic(True)
                     font.setBold(True)
                     standard_item.setData(QVariant("NULL"), Qt.EditRole)
                     standard_item.setFont(font)
@@ -87,4 +92,5 @@ class ResultsTable(QWidget):
             self.model.insertRow(idx, items)
 
     def display(self):
-        self.ResultsTable.setModel(self.model)
+        self.ResultsTable.setModel(self.sql_model)
+        self.ResultsTable.show()
