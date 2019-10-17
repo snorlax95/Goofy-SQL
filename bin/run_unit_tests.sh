@@ -13,7 +13,7 @@ activate_build_venv
 with_venv
 pushd "$PROJECT_DIR" > /dev/null
 echo "Running pytest"
-pytest --cov="$APPLICATION_DIR" --junit-xml="test_results.xml" --cov-report term-missing
+pytest --cov="$APPLICATION_DIR" --junit-xml="test_results.xml" --cov-report term-missing -vs
 
 
 echo "Generating coverage report"
