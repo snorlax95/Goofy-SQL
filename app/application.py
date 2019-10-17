@@ -1,18 +1,18 @@
 import sys
-from widgets.window import MainWindow
+from .widgets.window import MainWindow
 from PyQt5.QtWidgets import QApplication
 
 
-class App:
+class App(QApplication):
     def __init__(self):
-        app = QApplication(sys.argv)
+        super().__init__(sys.argv)
         if sys.platform == 'darwin':
-            app.setStyle('Macintosh')
+            self.setStyle('Macintosh')
         else:
-            app.setStyle('Fusion')
+            self.setStyle('Fusion')
         self.windows = []
         self.new_window()
-        app.exec_()
+        self.exec_()
 
     def new_window(self, evt=None):
         window = MainWindow()
