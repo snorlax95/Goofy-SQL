@@ -18,7 +18,7 @@ class ResultsTable(QWidget):
         self.model.itemChanged.connect(self.edit_cell)
         self.table_schema = None
 
-        # self.database = QSqlDatabase("QPSQL")
+        # self.database = QSqlDatabase("QPSQL7")
         # self.database.setHostName('127.0.0.1')
         # self.database.setUserName('root')
         # self.database.setPassword('root')
@@ -92,5 +92,4 @@ class ResultsTable(QWidget):
             self.model.insertRow(idx, items)
 
     def display(self):
-        self.ResultsTable.setModel(self.sql_model)
-        self.ResultsTable.show()
+        self.ResultsTable.setModel(self.model)
