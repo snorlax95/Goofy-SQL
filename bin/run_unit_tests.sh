@@ -11,7 +11,7 @@ export APPLICATION_DIR="$PROJECT_DIR/app"
 
 activate_build_venv
 with_venv
-pushd_silent "$PROJECT_DIR"
+pushd "$PROJECT_DIR" > /dev/null
 echo "Running pytest"
 pytest --cov="$APPLICATION_DIR" --junit-xml="test_results.xml" --cov-report term-missing
 
@@ -22,4 +22,4 @@ coverage html -d coverage_html
 coverage report --fail-under "90" --skip-covered
 
 deactivate
-
+popd > /dev/null
