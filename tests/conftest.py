@@ -1,8 +1,6 @@
 import os
 import pytest
 from unittest.mock import patch
-from app.application import App
-
 
 
 def pytest_configure():
@@ -11,12 +9,6 @@ def pytest_configure():
 
 def pytest_sessionfinish():
     pass
-
-
-@pytest.fixture
-def app():
-    app = App()
-    return app
 
 
 @pytest.fixture()
