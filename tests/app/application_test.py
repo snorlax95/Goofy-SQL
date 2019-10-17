@@ -1,6 +1,6 @@
 from PyQt5 import QtTest
 from unittest.mock import patch
-from app.application import App
+from app.main import App
 
 
 class TestApplication():
