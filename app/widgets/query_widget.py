@@ -13,7 +13,7 @@ class QueryWidget(QWidget):
         super().__init__()
         self.connection_helper = connection_helper
         self.query = None
-        self.table = ResultsTable()
+        self.table = ResultsTable(self.connection_helper)
         self.init_ui()
 
     def init_ui(self):
@@ -28,7 +28,7 @@ class QueryWidget(QWidget):
         if isinstance(results, str):
             QMessageBox.about(self, 'Oops!', f'You have an error: \n {results}')
         else:
-            self.table.clear_rows()
+            self.table.clear()
             if self.query[:6] != 'SELECT':
                 self.table.set_headers(['Results'])
                 self.table.set_rows([{'rows': f'Inserted {results} rows'}])

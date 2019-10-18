@@ -9,6 +9,7 @@ class MySQL():
         self.server = None
         self.selected_database = None
         self.selected_table = None
+        self.selected_table_schema = None
         self.charset_collation = {}
         self.default_charset = None
         self.engines = []
@@ -157,19 +158,19 @@ class MySQL():
             cursor.close()
             return 'Got error {!r}, errno is {}'.format(e, e.args[0])
 
-    def get_table_schema(self):
+    def get_table_schema(self, table=None):
         cursor = self.connection.cursor(DictCursor)
+        if table is None:
+            table = self.selected_table
         try:
-            cursor.execute(f"DESCRIBE {self.selected_table}")
+            cursor.execute(f"DESCRIBE {table}")
             results = cursor.fetchall()
             cursor.close()
+            self.selected_table_schema = results
             return results
         except Exception as e:
             cursor.close()
             return 'Got error {!r}, errno is {}'.format(e, e.args[0])
-
-    def convert_value(self):
-        pass
 
     def select_all(self, index, interval):
         select_query = f"SELECT * FROM {self.selected_table} LIMIT {index}, {interval};"
@@ -203,11 +204,38 @@ class MySQL():
             self.connection.autocommit(False)
             return 'Got error {!r}, errno is {}'.format(e, e.args[0])
 
+    def convert_value(self, table, column, value):
+        if table is None:
+            table = self.selected_table
+        if self.selected_table_schema is None:
+            schema = self.get_table_schema(table)
+        else:
+            schema = self.selected_table_schema
+        column_type = schema[column]['Type']
+        if 'varchar' in column_type.lower():
+            return str(value)
+
+    def get_identifier_column(self, table):
+        if table is None:
+            table = self.selected_table
+        if self.selected_table_schema is None:
+            schema = self.get_table_schema(table)
+        else:
+            schema = self.selected_table_schema
+        for idx, column in enumerate(schema):
+            if 'PRI' in column['Key']:
+                return {'column_name': column['Field'], 'column_index': idx}
+            if 'UNI' in column['Key']:
+                return {'column_name': column['Field'], 'column_index': idx}
+        return False
+
     def update_query(self, table, column, value, identifier_column, identifier):
+        # if key does not exist, use every row as identifier and LIMIT 1
         if table is None:
             table = self.selected_table
 
-        update_query = f"UPDATE {table} SET {column}={value} WHERE {identifier_column}={identifier}"
+        update_query = f"UPDATE {table} SET {column}='{value}' WHERE {identifier_column}={identifier}"
+        print(update_query)
         cursor = self.connection.cursor(DictCursor)
         cursor = self.use_database(self.selected_database, cursor)
         try:

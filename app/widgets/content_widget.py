@@ -56,7 +56,6 @@ class ContentWidget(QWidget):
             self.results_count = len(results)
             self.table.clear()
             self.table.set_headers([header['Field'] for header in schema])
-            self.table.set_schema(schema)
             self.table.set_rows(results)
             self.table.display()
             self.manage_buttons()

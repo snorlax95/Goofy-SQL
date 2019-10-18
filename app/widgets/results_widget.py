@@ -16,7 +16,6 @@ class ResultsTable(QWidget):
         self.connection_helper = connection_helper
         self.model = QStandardItemModel()
         self.model.itemChanged.connect(self.edit_cell)
-        self.table_schema = None
 
         # self.database = QSqlDatabase("QPSQL7")
         # self.database.setHostName('127.0.0.1')
@@ -43,20 +42,21 @@ class ResultsTable(QWidget):
         # self.ResultsTable.sortByColumn(0, Qt.AscendingOrder)
 
     def edit_cell(self, item):
-        # if key exists, use that as identifier
-        # if key does not exist, use every row as identifier and LIMIT 1
-        # get type of columns to convert values accordingly...convert method should be in connection helper
         # revert update command if failed to reset cell and display warning message
         column = item.column()
         row = item.row()
-        value = item.data(Qt.EditRole)
-        print(value)
-
         row_values = [self.model.item(row, column).text() for column in range(self.model.columnCount())]
-        column_value = self.model.horizontalHeaderItem(column)
+        column_value = self.model.horizontalHeaderItem(column).text()
+        value = item.data(Qt.EditRole)
 
-    def set_schema(self, table_schema):
-        self.table_schema = table_schema
+        converted_value = self.connection_helper.convert_value(None, column, value)
+        identifier_column = self.connection_helper.get_identifier_column(None)
+        if identifier_column is False:
+            result = self.connection_helper.update_query(None, column_value, converted_value, identifier_column, row_values[2])
+        else:
+            result = self.connection_helper.update_query(None, column_value, converted_value, identifier_column['column_name'], 
+            row_values[identifier_column['column_index']])
+        print(result)
 
     def set_headers(self, headers):
         self.headers = headers
@@ -87,7 +87,6 @@ class ResultsTable(QWidget):
                     standard_item.setFont(font)
                     items.append(standard_item)
                 else:
-                    print(type(item))
                     standard_item.setData(QVariant(item), Qt.EditRole)
                     items.append(standard_item)
             self.model.insertRow(idx, items)
