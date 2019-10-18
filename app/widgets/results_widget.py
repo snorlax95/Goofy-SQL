@@ -5,7 +5,6 @@ from PyQt5.QtWidgets import QWidget, QMessageBox
 from PyQt5 import uic
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QFont
 from PyQt5.QtCore import Qt, QVariant, QDateTime, QDate, QJsonValue
-from PyQt5.QtSql import QSqlDatabase, QSqlTableModel
 
 script_dir = path.dirname(__file__)
 ui_file = path.join(script_dir, "views/ResultsTable.ui")
@@ -18,32 +17,14 @@ class ResultsTable(QWidget):
         self.model = QStandardItemModel()
         self.model.itemChanged.connect(self.edit_cell)
 
-        # self.database = QSqlDatabase("QPSQL7")
-        # self.database.setHostName('127.0.0.1')
-        # self.database.setUserName('root')
-        # self.database.setPassword('root')
-        # self.database.setPort(5432)
-        # self.database.setDatabaseName('pydb')
-        # self.database.open()
-        # self.sql_model = QSqlTableModel(None, self.database)
-        # self.sql_model.setHeaderData(0, Qt.Horizontal, "id")
-        # self.sql_model.setTable('testing')
-        # print(self.sql_model.selectStatement())
-        # self.sql_model.select()
-        # print(self.sql_model.selectStatement())
-        # print(self.sql_model.lastError().text())
-        # print(self.sql_model.rowCount())
-        # print(self.sql_model.columnCount())
-
         self.init_ui()
 
     def init_ui(self):
         uic.loadUi(ui_file, self)
         self.ResultsTable.setSortingEnabled(True)
-        # self.ResultsTable.sortByColumn(0, Qt.AscendingOrder)
+        self.ResultsTable.sortByColumn(0, Qt.AscendingOrder)
 
     def edit_cell(self, item):
-        # revert update command if failed to reset cell and display warning message
         column = item.column()
         row = item.row()
         row_values = [self.model.item(row, column).text() for column in range(self.model.columnCount())]
