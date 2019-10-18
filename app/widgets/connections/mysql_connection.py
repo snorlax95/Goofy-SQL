@@ -191,7 +191,7 @@ class MySQL():
             self.connection.autocommit(False)
             return 'Got error {!r}, errno is {}'.format(e, e.args[0])
 
-    def convert_value(self, table, column, value):
+    def convert_value(self, table, column_index, value):
         if table is None:
             table = self.selected_table
         if self.selected_table_schema is None:
@@ -199,7 +199,7 @@ class MySQL():
         else:
             schema = self.selected_table_schema
 
-        column_type = schema[column]['Type']
+        column_type = schema[column_index]['Type']
         if 'varchar' in column_type.lower():
             return str(value)
         if 'datetime' in column_type.lower():
@@ -207,6 +207,31 @@ class MySQL():
         if 'date' in column_type.lower():
             return value.toString('yyyy-MM-dd')
 
+    def column_type(self, table, column):
+        if table is None:
+            table = self.selected_table
+        if self.selected_table_schema is None:
+            schema = self.get_table_schema(table)
+        else:
+            schema = self.selected_table_schema
+
+        column_type = None
+        for table_column in schema:
+            if table_column['Field'] == column:
+                column_type = table_column['Type']
+                break
+
+        if table_column is None:
+            return None
+
+        if 'varchar' in column_type.lower():
+            return 'string'
+        elif 'datetime' in column_type.lower():
+            return 'datetime'
+        elif 'date' in column_type.lower():
+            return 'date'
+        elif 'json' in column_type.lower():
+            return 'json'
 
     def get_identifier_column(self, table):
         if table is None:

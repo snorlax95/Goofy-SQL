@@ -1,9 +1,10 @@
 import datetime
+import json
 from os import path
 from PyQt5.QtWidgets import QWidget, QMessageBox
 from PyQt5 import uic
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QFont
-from PyQt5.QtCore import Qt, QVariant, QDateTime, QDate
+from PyQt5.QtCore import Qt, QVariant, QDateTime, QDate, QJsonValue
 from PyQt5.QtSql import QSqlDatabase, QSqlTableModel
 
 script_dir = path.dirname(__file__)
@@ -67,18 +68,24 @@ class ResultsTable(QWidget):
     def set_rows(self, rows):
         for idx, row in enumerate(rows):
             items = []
-            for item in row.values():
+            for column, item in row.items():
                 standard_item = QStandardItem()
-                if isinstance(item, datetime.datetime):
-                    standard_item.setData(QDateTime(item), Qt.EditRole)
-                elif isinstance(item, datetime.date):
-                    standard_item.setData(QDate(item), Qt.EditRole)
-                elif item is None:
+
+                if item is None:
                     font = QFont()
                     font.setItalic(True)
                     font.setBold(True)
                     standard_item.setData(QVariant("NULL"), Qt.EditRole)
                     standard_item.setFont(font)
+                elif isinstance(item, datetime.datetime):
+                    standard_item.setData(QDateTime(item), Qt.EditRole)
+                elif isinstance(item, datetime.date):
+                    standard_item.setData(QDate(item), Qt.EditRole)
+                elif isinstance(item, str):
+                    if column == 'json_col':
+                        standard_item.setData(QJsonValue(item), Qt.EditRole)
+                    else:
+                        standard_item.setData(QVariant(item), Qt.EditRole)
                 else:
                     standard_item.setData(QVariant(item), Qt.EditRole)
                 items.append(standard_item)
