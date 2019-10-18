@@ -40,8 +40,9 @@ class ContentWidget(QWidget):
         self.ResultsText.setText(text)
 
     def refresh(self):
-        results = self.connection_helper.select_all(self.current_interval, self.interval)
-        count = self.connection_helper.select_total_count()
+        table_results = self.connection_helper.select_all(self.current_interval, self.interval)
+        results = table_results['results']
+        count = table_results['count']
         schema = self.connection_helper.get_table_schema()
 
         if isinstance(count, str):

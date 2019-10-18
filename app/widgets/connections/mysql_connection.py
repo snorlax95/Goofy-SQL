@@ -173,32 +173,19 @@ class MySQL():
             return 'Got error {!r}, errno is {}'.format(e, e.args[0])
 
     def select_all(self, index, interval):
-        select_query = f"SELECT * FROM {self.selected_table} LIMIT {index}, {interval};"
+        select_query = f"SELECT * FROM {self.selected_table}  LIMIT {index}, {interval};"
+        count_query = f"SELECT COUNT(*) as count FROM {self.selected_table};"
         self.connection.autocommit(True)
         cursor = self.connection.cursor(DictCursor)
         cursor = self.use_database(self.selected_database, cursor)
         try:
             cursor.execute(select_query)
             results = cursor.fetchall()
-            cursor.close()
-            self.connection.autocommit(False)
-            return results
-        except Exception as e:
-            cursor.close()
-            self.connection.autocommit(False)
-            return 'Got error {!r}, errno is {}'.format(e, e.args[0])
-
-    def select_total_count(self):
-        count_query = f"SELECT COUNT(*) as count FROM {self.selected_table};"
-        self.connection.autocommit(True)
-        cursor = self.connection.cursor(DictCursor)
-        cursor = self.use_database(self.selected_database, cursor)
-        try:
             cursor.execute(count_query)
-            result = cursor.fetchone()
+            count = cursor.fetchone()['count']
             cursor.close()
             self.connection.autocommit(False)
-            return result['count']
+            return {'results': results, 'count': count}
         except Exception as e:
             cursor.close()
             self.connection.autocommit(False)
@@ -229,12 +216,25 @@ class MySQL():
                 return {'column_name': column['Field'], 'column_index': idx}
         return False
 
-    def update_query(self, table, column, value, identifier_column, identifier):
-        # if key does not exist, use every row as identifier and LIMIT 1
+    def update_query(self, table, column_index, column_value, row_index, cell_value, row_values):
         if table is None:
             table = self.selected_table
 
-        update_query = f"UPDATE {table} SET {column}='{value}' WHERE {identifier_column}={identifier}"
+        converted_value = self.convert_value(table, column_index, cell_value)
+        identifier_column = self.get_identifier_column(table)
+        if identifier_column is False:
+            # WHERE every single row value is checked, no key to rely on. LIMIT 1
+            # WHERE column=value, column=value, column=value LIMIT 1
+            update_query = f"UPDATE {table} SET {column_value}='{converted_value}' WHERE " \
+                f"{identifier_column}={table} LIMIT 1"
+        else:
+            if isinstance(converted_value, str):
+                update_query = f"UPDATE {table} SET {column_value}='{converted_value}' WHERE " \
+                    f"{identifier_column['column_name']}={row_values[identifier_column['column_index']]}"
+            else:
+                update_query = f"UPDATE {table} SET {column_value}={converted_value} WHERE " \
+                    f"{identifier_column['column_name']}={row_values[identifier_column['column_index']]}"
+
         print(update_query)
         cursor = self.connection.cursor(DictCursor)
         cursor = self.use_database(self.selected_database, cursor)

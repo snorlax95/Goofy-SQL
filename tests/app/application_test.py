@@ -4,17 +4,17 @@ from app.main import App
 
 
 class TestApplication():
+    app = App()
 
     def test_open(self):
-        app = App()
-        app.new_window()
-        assert len(app.windows) == 2
-        assert app.windows[1].isVisible() is True
-        app.quit()
+        self.app.new_window()
+        assert len(self.app.windows) == 2
+        assert self.app.windows[1].isVisible() is True
+        self.app.quit()
 
     @patch('sys.platform')
     def test_open_windows_style(self, mock_sys_platform):
         mock_sys_platform.return_value = 'win32'
-        app = App()
-        assert len(app.windows) == 1
-        app.quit()
+        new_app = App()
+        assert len(new_app.windows) == 1
+        new_app.quit()

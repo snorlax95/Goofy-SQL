@@ -49,13 +49,7 @@ class ResultsTable(QWidget):
         column_value = self.model.horizontalHeaderItem(column).text()
         value = item.data(Qt.EditRole)
 
-        converted_value = self.connection_helper.convert_value(None, column, value)
-        identifier_column = self.connection_helper.get_identifier_column(None)
-        if identifier_column is False:
-            result = self.connection_helper.update_query(None, column_value, converted_value, identifier_column, row_values[2])
-        else:
-            result = self.connection_helper.update_query(None, column_value, converted_value, identifier_column['column_name'], 
-            row_values[identifier_column['column_index']])
+        result = self.connection_helper.update_query(None, column, column_value, row, value, row_values)
         print(result)
 
     def set_headers(self, headers):
@@ -73,25 +67,21 @@ class ResultsTable(QWidget):
     def set_rows(self, rows):
         for idx, row in enumerate(rows):
             items = []
-            date_format = "%Y-%m-%d %H:%M:%S %Z"
             for item in row.values():
                 standard_item = QStandardItem()
                 if isinstance(item, datetime.datetime):
                     standard_item.setData(QDateTime(item), Qt.EditRole)
-                    items.append(standard_item)
                 elif isinstance(item, datetime.date):
                     standard_item.setData(QDate(item), Qt.EditRole)
-                    items.append(standard_item)
                 elif item is None:
                     font = QFont()
                     font.setItalic(True)
                     font.setBold(True)
                     standard_item.setData(QVariant("NULL"), Qt.EditRole)
                     standard_item.setFont(font)
-                    items.append(standard_item)
                 else:
                     standard_item.setData(QVariant(item), Qt.EditRole)
-                    items.append(standard_item)
+                items.append(standard_item)
             self.model.insertRow(idx, items)
 
     def display(self):
