@@ -198,9 +198,15 @@ class MySQL():
             schema = self.get_table_schema(table)
         else:
             schema = self.selected_table_schema
+
         column_type = schema[column]['Type']
         if 'varchar' in column_type.lower():
             return str(value)
+        if 'datetime' in column_type.lower():
+            return value.toString('yyyy-MM-dd hh:mm:ss')
+        if 'date' in column_type.lower():
+            return value.toString('yyyy-MM-dd')
+
 
     def get_identifier_column(self, table):
         if table is None:
