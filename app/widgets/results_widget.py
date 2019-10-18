@@ -3,7 +3,7 @@ from os import path
 from PyQt5.QtWidgets import QWidget, QMessageBox
 from PyQt5 import uic
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QFont
-from PyQt5.QtCore import Qt, QVariant
+from PyQt5.QtCore import Qt, QVariant, QDateTime, QDate
 from PyQt5.QtSql import QSqlDatabase, QSqlTableModel
 
 script_dir = path.dirname(__file__)
@@ -76,8 +76,11 @@ class ResultsTable(QWidget):
             date_format = "%Y-%m-%d %H:%M:%S %Z"
             for item in row.values():
                 standard_item = QStandardItem()
-                if isinstance(item, datetime.date) or isinstance(item, datetime.datetime):
-                    standard_item.setData(QVariant(item.strftime(date_format)), Qt.EditRole)
+                if isinstance(item, datetime.datetime):
+                    standard_item.setData(QDateTime(item), Qt.EditRole)
+                    items.append(standard_item)
+                elif isinstance(item, datetime.date):
+                    standard_item.setData(QDate(item), Qt.EditRole)
                     items.append(standard_item)
                 elif item is None:
                     font = QFont()
