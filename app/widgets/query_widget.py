@@ -30,12 +30,13 @@ class QueryWidget(QWidget):
         else:
             self.table.clear()
             if self.query[:6] != 'SELECT':
-                self.table.set_headers(['Results'])
-                self.table.set_rows([{'rows': f'Inserted {results} rows'}])
+                self.ResultsLabel.setText(f'Affected {results} rows')
+                self.table.clear()
                 self.table.display()
             else:
-                headers = list(results[0].keys())
-                self.table.set_headers(headers)
+                # TODO: get table from selection to get proper schema
+                self.ResultsLabel.setText(len(results))
+                self.table.set_headers(results)
                 self.table.set_rows(results)
                 self.table.display()
 

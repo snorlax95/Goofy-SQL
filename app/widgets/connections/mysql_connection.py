@@ -9,7 +9,6 @@ class MySQL():
         self.server = None
         self.selected_database = None
         self.selected_table = None
-        self.selected_table_schema = None
         self.charset_collation = {}
         self.default_charset = None
         self.engines = []
@@ -158,7 +157,7 @@ class MySQL():
             cursor.close()
             return 'Got error {!r}, errno is {}'.format(e, e.args[0])
 
-    def get_table_schema(self, table=None):
+    def get_table_schema(self, table):
         cursor = self.connection.cursor(DictCursor)
         if table is None:
             table = self.selected_table
@@ -166,7 +165,6 @@ class MySQL():
             cursor.execute(f"DESCRIBE {table}")
             results = cursor.fetchall()
             cursor.close()
-            self.selected_table_schema = results
             return results
         except Exception as e:
             cursor.close()
@@ -191,81 +189,74 @@ class MySQL():
             self.connection.autocommit(False)
             return 'Got error {!r}, errno is {}'.format(e, e.args[0])
 
-    def convert_value(self, table, column_index, value):
-        if table is None:
-            table = self.selected_table
-        if self.selected_table_schema is None:
-            schema = self.get_table_schema(table)
-        else:
-            schema = self.selected_table_schema
-
-        column_type = schema[column_index]['Type']
-        if 'varchar' in column_type.lower():
+    def convert_value(self, schema, column, value):
+        column_type = schema['types'][column]
+        if column_type == 'string':
             return str(value)
-        if 'datetime' in column_type.lower():
+        if column_type == 'datetime':
             return value.toString('yyyy-MM-dd hh:mm:ss')
-        if 'date' in column_type.lower():
+        if column_type == 'date':
             return value.toString('yyyy-MM-dd')
+        if column_type == 'number':
+            return value
 
-    def column_type(self, table, column):
+    def get_simplified_schema(self, table, schema):
         if table is None:
             table = self.selected_table
-        if self.selected_table_schema is None:
+        if schema is None:
             schema = self.get_table_schema(table)
-        else:
-            schema = self.selected_table_schema
+            
 
-        column_type = None
-        for table_column in schema:
-            if table_column['Field'] == column:
-                column_type = table_column['Type']
-                break
-
-        if table_column is None:
-            return None
-
-        if 'varchar' in column_type.lower():
-            return 'string'
-        elif 'datetime' in column_type.lower():
-            return 'datetime'
-        elif 'date' in column_type.lower():
-            return 'date'
-        elif 'json' in column_type.lower():
-            return 'json'
-
-    def get_identifier_column(self, table):
-        if table is None:
-            table = self.selected_table
-        if self.selected_table_schema is None:
-            schema = self.get_table_schema(table)
-        else:
-            schema = self.selected_table_schema
+        columns = {'types': {}, 'keys': {}, 'columns': [], 'indexes': {}}
         for idx, column in enumerate(schema):
+            column_key = None
             if 'PRI' in column['Key']:
-                return {'column_name': column['Field'], 'column_index': idx}
-            if 'UNI' in column['Key']:
-                return {'column_name': column['Field'], 'column_index': idx}
-        return False
+                column_key = 'primary'
+            elif 'UNI' in column['Key']:
+                column_key = 'unique'
+            columns['keys'][column['Field']] = column_key
 
-    def update_query(self, table, column_index, column_value, row_index, cell_value, row_values):
+            column_type = 'str'
+            if 'varchar' in column['Type'].lower():
+                column_type = 'string'
+            elif 'datetime' in column['Type'].lower():
+                column_type = 'datetime'
+            elif 'date' in column['Type'].lower():
+                column_type = 'date'
+            elif 'json' in column['Type'].lower():
+                column_type = 'json'
+            elif 'int' in column['Type'].lower():
+                column_type = 'number'
+            columns['types'][column['Field']] = column_type
+            columns['columns'].append(column)
+            columns['indexes'][column['Field']] = idx
+        return columns
+
+    def update_query(self, table, schema, column_index, column_value, row_index, cell_value, row_values):
         if table is None:
             table = self.selected_table
 
-        converted_value = self.convert_value(table, column_index, cell_value)
-        identifier_column = self.get_identifier_column(table)
-        if identifier_column is False:
-            # WHERE every single row value is checked, no key to rely on. LIMIT 1
-            # WHERE column=value, column=value, column=value LIMIT 1
-            update_query = f"UPDATE {table} SET {column_value}='{converted_value}' WHERE " \
-                f"{identifier_column}={table} LIMIT 1"
-        else:
-            if isinstance(converted_value, str):
-                update_query = f"UPDATE {table} SET {column_value}='{converted_value}' WHERE " \
-                    f"{identifier_column['column_name']}={row_values[identifier_column['column_index']]}"
-            else:
-                update_query = f"UPDATE {table} SET {column_value}={converted_value} WHERE " \
-                    f"{identifier_column['column_name']}={row_values[identifier_column['column_index']]}"
+        converted_value = self.convert_value(schema, column_value, cell_value)
+        identifier_column = None
+        identifier_type = None
+        for key, val in schema['keys'].items():
+            if (val == 'primary' or val == 'unique') and identifier_type != 'primary':
+                identifier_type = val
+                identifier_column = key
 
+        if isinstance(converted_value, str):
+            set_clause = f"SET {column_value}='{converted_value}'"
+        else:
+            set_clause = f"SET {column_value}={converted_value}"
+
+        if identifier_column is None:
+            where_clause = "WHERE LIMIT 1"
+        else:
+            identifier_column_value = self.convert_value(schema, identifier_column, row_values[column_index])
+            column_index = schema['indexes'][identifier_column]
+            where_clause = f"WHERE {identifier_column}={identifier_column_value}"
+        
+        update_query = f"UPDATE {table} {set_clause} {where_clause}"
         print(update_query)
         cursor = self.connection.cursor(DictCursor)
         cursor = self.use_database(self.selected_database, cursor)

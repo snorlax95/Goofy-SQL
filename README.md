@@ -35,7 +35,7 @@ command: . build.sh
 
 * Sort results table by column asc/desc (it's clickable, but since everything are strings..numbers are sorted incorrectly)
 
-* Edit fields in results table (have listener to get row values, column name, and field value. Need to compare with table structure to make correct update statement)
+* Edit fields in results, needs additional code for various column types. identifier column value is incorrect when editing the primary or unique column value
 
 * in ssh connect, allow user to select ssh key instead of password
 

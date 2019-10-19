@@ -43,7 +43,7 @@ class ContentWidget(QWidget):
         table_results = self.connection_helper.select_all(self.current_interval, self.interval)
         results = table_results['results']
         count = table_results['count']
-        schema = self.connection_helper.get_table_schema()
+        schema = self.connection_helper.get_simplified_schema(None, None)
 
         if isinstance(count, str):
             QMessageBox.about(self, 'Oops!', f'You have an error: \n {count}')
@@ -56,8 +56,9 @@ class ContentWidget(QWidget):
             self.set_results_text()
             self.results_count = len(results)
             self.table.clear()
-            self.table.set_headers([header['Field'] for header in schema])
-            self.table.set_rows(results)
+            self.table.set_schema(schema)
+            self.table.set_headers(results)
+            self.table.set_rows(results, schema)
             self.table.display()
             self.manage_buttons()
 

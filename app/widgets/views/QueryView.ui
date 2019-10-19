@@ -38,7 +38,7 @@
    </item>
    <item row="0" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout">
-     <item alignment="Qt::AlignHCenter">
+     <item>
       <widget class="QPushButton" name="RunQueryButton">
        <property name="minimumSize">
         <size>
@@ -57,6 +57,19 @@
        </property>
        <property name="text">
         <string>Run Query</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="ResultsLabel">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>1</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string/>
        </property>
       </widget>
      </item>
