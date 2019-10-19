@@ -35,9 +35,13 @@ class QueryWidget(QWidget):
                 self.table.display()
             else:
                 # TODO: get table from selection to get proper schema
-                self.ResultsLabel.setText(len(results))
+                # TODO: Figure out how to handle JOINS, as it wont be as simple as just getting the schema
+                self.table.clear()
+                table = 'testing'
+                schema = self.connection_helper.get_simplified_schema(table, None)
+                self.ResultsLabel.setText(f"{len(results)} results")
                 self.table.set_headers(results)
-                self.table.set_rows(results)
+                self.table.set_rows(results, schema)
                 self.table.display()
 
     def update(self):
