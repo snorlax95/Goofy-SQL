@@ -172,6 +172,38 @@ class MySQL():
             cursor.close()
             return 'Got error {!r}, errno is {}'.format(e, e.args[0])
 
+    def get_simplified_schema(self, table, schema):
+        if table is None:
+            table = self.selected_table
+        if schema is None:
+            schema = self.get_table_schema(table)
+            
+
+        columns = {'types': {}, 'keys': {}, 'columns': [], 'indexes': {}}
+        for idx, column in enumerate(schema):
+            column_key = None
+            if 'PRI' in column['Key']:
+                column_key = 'primary'
+            elif 'UNI' in column['Key']:
+                column_key = 'unique'
+            columns['keys'][column['Field']] = column_key
+
+            column_type = 'str'
+            if 'varchar' in column['Type'].lower():
+                column_type = 'string'
+            elif 'datetime' in column['Type'].lower():
+                column_type = 'datetime'
+            elif 'date' in column['Type'].lower():
+                column_type = 'date'
+            elif 'json' in column['Type'].lower():
+                column_type = 'json'
+            elif 'int' in column['Type'].lower():
+                column_type = 'number'
+            columns['types'][column['Field']] = column_type
+            columns['columns'].append(column)
+            columns['indexes'][column['Field']] = idx
+        return columns
+
     def select_all(self, index, interval):
         select_query = f"SELECT * FROM {self.selected_table}  LIMIT {index}, {interval};"
         count_query = f"SELECT COUNT(*) as count FROM {self.selected_table};"
