@@ -181,18 +181,20 @@ class MySQL():
         columns = {'columns': {}, 'indexes': {}}
         for idx, column in enumerate(schema):
             new_column = {'Type': None, 'Null': False, 'Unsigned': False, 'Zerofill': False,
-                'Binary': False, 'Key': None, 'default': None, 'extra': None, 'encoding': None, 'collation': None}
+                          'Binary': False, 'Key': None, 'Default': None, 'Extra': None, 'encoding': None, 'collation': None}
 
-            new_column['Type'] = column['Type']
             if column['Null'] == 'YES':
                 new_column['Null'] = True
-            if 'unsigned' in column['Type'].lower():
+            if 'UNSIGNED' in column['Type'].upper():
+                column['Type'] = column['Type'].upper().replace(' UNSIGNED', '', 1)
                 new_column['Unsigned'] = True
-            if 'zerofill' in column['Type'].lower():
+            if 'ZEROFILL' in column['Type'].upper():
+                column['Type'] = column['Type'].upper().replace(' ZEROFILL', '', 1)
                 new_column['Zerofill'] = True
-            new_column['Key'] = column['Key']
-            new_column['Default'] = column['Default']
-            new_column['Extra'] = column['Extra']
+            new_column['Type'] = column['Type'].upper()
+            new_column['Key'] = column['Key'].upper() if column['Key'] is not None else None
+            new_column['Default'] = column['Default'].upper() if column['Default'] is not None else None
+            new_column['Extra'] = column['Extra'].upper() if column['Extra'] is not None else None
            
             columns['columns'][column['Field']] = new_column
             columns['indexes'][column['Field']] = idx
@@ -272,6 +274,39 @@ class MySQL():
             if 'UNI' in column['Key']:
                 return {'column_name': column['Field'], 'column_index': idx}
         return False
+
+    def modify_table(self, table, values):
+        # CHARACTER SET {char_set}
+        # COLLATION {collation}
+        # Figure out Binary
+        # Handle Key CHANGE
+        if table is None:
+            table = self.selected_table
+
+        if values['Default'] is None:
+            default = ""
+        else:
+            default = f"DEFAULT {values['Default']} "
+
+        query = f"ALTER TABLE {table} MODIFY " \
+            f"{values['Field']} {values['Type']} " \
+            f"{'UNSIGNED ' if values['Unsigned'] else ''}" \
+            f"{'ZEROFILL ' if values['Zerofill'] else ''}" \
+            f"{'NULL ' if values['Allow Null'] else 'NOT NULL '}" \
+            f"{values['Extra'] if values['Extra'] is not None else ''}" \
+            f"{default}"
+        print(query)
+
+        cursor = self.connection.cursor(DictCursor)
+        cursor = self.use_database(self.selected_database, cursor)
+        try:
+            affected_rows = cursor.execute(query)
+            self.connection.commit()
+            cursor.close()
+            return affected_rows
+        except Exception as e:
+            cursor.close()
+            return 'Got error {!r}, errno is {}'.format(e, e.args[0])
 
     def update_query(self, table, column_index, column_value, row_index, cell_value, row_values):
         if table is None:
