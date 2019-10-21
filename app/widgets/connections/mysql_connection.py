@@ -170,6 +170,32 @@ class MySQL():
             cursor.close()
             return 'Got error {!r}, errno is {}'.format(e, e.args[0])
 
+    def get_standardized_schema(self, table, schema):
+        if table is None:
+            table = self.selected_table
+        if schema is None:
+            schema = self.get_table_schema(table)
+            
+        columns = {'columns': {}, 'indexes': {}}
+        for idx, column in enumerate(schema):
+            new_column = {'Type': None, 'Null': False, 'Unsigned': False, 'Zerofill': False,
+                'Binary': False, 'Key': None, 'default': None, 'extra': None, 'encoding': None, 'collation': None}
+
+            new_column['Type'] = column['Type']
+            if column['Null'] == 'YES':
+                new_column['Null'] = True
+            if 'unsigned' in column['Type'].lower():
+                new_column['Unsigned'] = True
+            if 'zerofill' in column['Type'].lower():
+                new_column['Zerofill'] = True
+            new_column['Key'] = column['Key']
+            new_column['Default'] = column['Default']
+            new_column['Extra'] = column['Extra']
+           
+            columns['columns'][column['Field']] = new_column
+            columns['indexes'][column['Field']] = idx
+        return columns
+
     def select_all(self, index, interval):
         select_query = f"SELECT * FROM {self.selected_table}  LIMIT {index}, {interval};"
         count_query = f"SELECT COUNT(*) as count FROM {self.selected_table};"
