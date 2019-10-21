@@ -275,11 +275,10 @@ class MySQL():
                 return {'column_name': column['Field'], 'column_index': idx}
         return False
 
-    def modify_table(self, table, values):
+    def modify_table_column(self, table, values):
         # CHARACTER SET {char_set}
         # COLLATION {collation}
         # Figure out Binary
-        # Handle Key CHANGE
         if table is None:
             table = self.selected_table
 
@@ -307,6 +306,15 @@ class MySQL():
         except Exception as e:
             cursor.close()
             return 'Got error {!r}, errno is {}'.format(e, e.args[0])
+
+    def modify_table_key(self, table, columns, type, name):
+        # Handle Key       PRIMARY KEY (column name)
+        # other keys. UNIQUE could be another type    CREATE UNIQUE INDEX (name) ON table(column, column 2)
+        if type == 'primary':
+            query = f"ALTER TABLE {table} DROP PRIMARY KEY, ADD PRIMARY KEY({columns})"
+        else:
+            query = f"CREATE {type} INDEX ({name}) ON {table}({columns})"
+        print(query)
 
     def update_query(self, table, column_index, column_value, row_index, cell_value, row_values):
         if table is None:
