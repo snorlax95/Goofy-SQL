@@ -15,10 +15,13 @@ class SchemaWidget(QWidget):
         self.connection_helper = connection_helper
         self.model = QStandardItemModel()
         self.model.itemChanged.connect(self.edit_cell)
-        self.column_labels = ["Field", "Type", "Length", "Unsigned", 
+        self.schema = self.connection_helper.get_standardized_schema(None, None)
+        self.column_labels = ["Field", "Type", "Unsigned", 
         "Zerofill", "Binary", "Allow Null", "Key", "Default", 
         "Extra", "Encoding", "Collation"]
 
+        # need index form for adding new keys. Not a separate table..just a button
+        # need columns resized
         self.init_ui()
         self.refresh()
         
@@ -26,6 +29,48 @@ class SchemaWidget(QWidget):
         uic.loadUi(ui_file, self)
         self.RefreshButton.clicked.connect(self.refresh)
         self.model.setHorizontalHeaderLabels(self.column_labels)
+        row_index = 0
+        for key, val in self.schema['columns'].items():
+            items = []
+            # based on the data, display the proper content type / option in rows
+            standard_item = QStandardItem()
+            standard_item.setData(QVariant(key), Qt.EditRole)
+            items.append(standard_item)
+
+            standard_item = QStandardItem()
+            standard_item.setData(QVariant(val['Type']), Qt.EditRole)
+            items.append(standard_item)
+
+            standard_item = QStandardItem()
+            standard_item.setCheckable(True)
+            items.append(standard_item)
+
+            standard_item = QStandardItem()
+            standard_item.setCheckable(True)
+            items.append(standard_item)
+
+            standard_item = QStandardItem()
+            standard_item.setCheckable(True)
+            items.append(standard_item)
+
+            standard_item = QStandardItem()
+            standard_item.setCheckable(True)
+            items.append(standard_item)
+
+            standard_item = QStandardItem()
+            standard_item.setData(QVariant(val['Key']), Qt.EditRole)
+            items.append(standard_item)
+
+            standard_item = QStandardItem()
+            standard_item.setData(QVariant(val['Default']), Qt.EditRole)
+            items.append(standard_item)
+
+            standard_item = QStandardItem()
+            standard_item.setData(QVariant(val['Extra']), Qt.EditRole)
+            items.append(standard_item)
+
+            self.model.insertRow(row_index, items)
+            row_index += 1
 
     def edit_cell(self):
         print('edit')

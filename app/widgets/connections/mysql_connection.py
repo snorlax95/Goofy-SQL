@@ -172,35 +172,29 @@ class MySQL():
             cursor.close()
             return 'Got error {!r}, errno is {}'.format(e, e.args[0])
 
-    def get_simplified_schema(self, table, schema):
+    def get_standardized_schema(self, table, schema):
         if table is None:
             table = self.selected_table
         if schema is None:
             schema = self.get_table_schema(table)
             
-
-        columns = {'types': {}, 'keys': {}, 'columns': [], 'indexes': {}}
+        columns = {'columns': {}, 'indexes': {}}
         for idx, column in enumerate(schema):
-            column_key = None
-            if 'PRI' in column['Key']:
-                column_key = 'primary'
-            elif 'UNI' in column['Key']:
-                column_key = 'unique'
-            columns['keys'][column['Field']] = column_key
+            new_column = {'Type': None, 'Null': False, 'Unsigned': False, 'Zerofill': False,
+                'Binary': False, 'Key': None, 'default': None, 'extra': None, 'encoding': None, 'collation': None}
 
-            column_type = 'str'
-            if 'varchar' in column['Type'].lower():
-                column_type = 'string'
-            elif 'datetime' in column['Type'].lower():
-                column_type = 'datetime'
-            elif 'date' in column['Type'].lower():
-                column_type = 'date'
-            elif 'json' in column['Type'].lower():
-                column_type = 'json'
-            elif 'int' in column['Type'].lower():
-                column_type = 'number'
-            columns['types'][column['Field']] = column_type
-            columns['columns'].append(column)
+            new_column['Type'] = column['Type']
+            if column['Null'] == 'YES':
+                new_column['Null'] = True
+            if 'unsigned' in column['Type'].lower():
+                new_column['Unsigned'] = True
+            if 'zerofill' in column['Type'].lower():
+                new_column['Zerofill'] = True
+            new_column['Key'] = column['Key']
+            new_column['Default'] = column['Default']
+            new_column['Extra'] = column['Extra']
+           
+            columns['columns'][column['Field']] = new_column
             columns['indexes'][column['Field']] = idx
         return columns
 
