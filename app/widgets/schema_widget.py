@@ -72,9 +72,18 @@ class SchemaWidget(QWidget):
             self.model.insertRow(row_index, items)
             row_index += 1
 
-    def edit_cell(self):
-        print('edit')
-        # editing item
+    def edit_cell(self, item):
+        column = item.column()
+        row = item.row()
+        # row_values = [self.model.item(row, column).text() for column in range(self.model.columnCount())]
+        column_value = self.model.horizontalHeaderItem(column).text()
+
+        if item.isCheckable():
+            value = True if item.checkState() == 2 else False
+        else:
+            value = item.data(Qt.EditRole)
+        # send column name + that rows entire data for edit
+        print(value)
 
     def refresh(self):
         self.SchemaTable.setModel(self.model)
