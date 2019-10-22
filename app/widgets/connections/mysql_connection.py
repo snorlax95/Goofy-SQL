@@ -1,4 +1,5 @@
 import pymysql
+import copy
 from sshtunnel import SSHTunnelForwarder
 from pymysql.cursors import DictCursor
 
@@ -173,6 +174,8 @@ class MySQL():
             return 'Got error {!r}, errno is {}'.format(e, e.args[0])
 
     def get_standardized_schema(self, table, schema):
+        simple_types = {"VARCHAR": "string", "LONGTEXT": "string", "INT": "number", "BIGINT": "number",
+        "SMALLINT": "number", "FLOAT": "number", "DATETIME": "date", "DATE": "date"}
         if table is None:
             table = self.selected_table
         if schema is None:
@@ -181,7 +184,8 @@ class MySQL():
         columns = {'columns': {}, 'indexes': {}}
         for idx, column in enumerate(schema):
             new_column = {'Type': None, 'Null': False, 'Unsigned': False, 'Zerofill': False,
-                          'Binary': False, 'Key': None, 'Default': None, 'Extra': None, 'encoding': None, 'collation': None}
+                          'Binary': False, 'Key': None, 'Default': None, 'Extra': None, 
+                          'Simple_Type': None, 'encoding': None, 'collation': None}
 
             if column['Null'] == 'YES':
                 new_column['Null'] = True
@@ -191,9 +195,18 @@ class MySQL():
             if 'ZEROFILL' in column['Type'].upper():
                 column['Type'] = column['Type'].upper().replace(' ZEROFILL', '', 1)
                 new_column['Zerofill'] = True
+
+            start_index = column['Type'].find('(')
+            if start_index != -1:
+                simple_type = copy.copy(column['Type'])[0:start_index].upper()
+            else:
+                simple_type = copy.copy(column['Type']).upper()
+            if simple_type in simple_types:
+                new_column['Simple_Type'] = simple_types[simple_type]
+
             new_column['Type'] = column['Type'].upper()
             new_column['Key'] = column['Key'].upper() if column['Key'] is not None else None
-            new_column['Default'] = column['Default'].upper() if column['Default'] is not None else None
+            new_column['Default'] = column['Default'] if column['Default'] is not None else None
             new_column['Extra'] = column['Extra'].upper() if column['Extra'] is not None else None
            
             columns['columns'][column['Field']] = new_column
@@ -275,19 +288,22 @@ class MySQL():
                 return {'column_name': column['Field'], 'column_index': idx}
         return False
 
-    def modify_table_column(self, table, values):
+    def modify_table_column(self, table, values, simple_type):
         # CHARACTER SET {char_set}
         # COLLATION {collation}
         # Figure out Binary
         if table is None:
             table = self.selected_table
 
-        if values['Default'] is None:
+        if values['Default'] is None or values['Default'] == '':
             default = ""
         else:
-            default = f"DEFAULT {values['Default']} "
-
-        query = f"ALTER TABLE '{table}' MODIFY " \
+            if simple_type == "number":
+                default = f"DEFAULT {values['Default']} "
+            else:
+                default = f"DEFAULT '{values['Default']}' "
+                
+        query = f"ALTER TABLE `{table}` MODIFY " \
             f"{values['Field']} {values['Type']} " \
             f"{'UNSIGNED ' if values['Unsigned'] else ''}" \
             f"{'ZEROFILL ' if values['Zerofill'] else ''}" \
@@ -307,11 +323,9 @@ class MySQL():
             cursor.close()
             return 'Got error {!r}, errno is {}'.format(e, e.args[0])
 
-    def modify_table_key(self, table, columns, type, name):
-        # Handle Key       PRIMARY KEY (column name)
-        # other keys. UNIQUE could be another type    CREATE UNIQUE INDEX (name) ON table(column, column 2)
-        if type == 'primary':
-            query = f"ALTER TABLE '{table}' DROP PRIMARY KEY, ADD PRIMARY KEY({columns})"
+    def modify_table_key(self, table, columns, index_type, name):
+        if index_type == 'primary':
+            query = f"ALTER TABLE `{table}` DROP PRIMARY KEY, ADD PRIMARY KEY({columns})"
         else:
             query = f"CREATE {type} INDEX ({name}) ON {table}({columns})"
         print(query)
@@ -325,14 +339,14 @@ class MySQL():
         if identifier_column is False:
             # WHERE every single row value is checked, no key to rely on. LIMIT 1
             # WHERE column=value, column=value, column=value LIMIT 1
-            update_query = f"UPDATE '{table}' SET {column_value}='{converted_value}' WHERE " \
-                f"{identifier_column}={table} LIMIT 1"
+            update_query = f"UPDATE `{table}` SET {column_value}='{converted_value}' WHERE " \
+                f"{identifier_column}=`{table}` LIMIT 1"
         else:
             if isinstance(converted_value, str):
-                update_query = f"UPDATE '{table}' SET {column_value}='{converted_value}' WHERE " \
+                update_query = f"UPDATE `{table}` SET {column_value}='{converted_value}' WHERE " \
                     f"{identifier_column['column_name']}={row_values[identifier_column['column_index']]}"
             else:
-                update_query = f"UPDATE '{table}' SET {column_value}={converted_value} WHERE " \
+                update_query = f"UPDATE `{table}` SET {column_value}={converted_value} WHERE " \
                     f"{identifier_column['column_name']}={row_values[identifier_column['column_index']]}"
 
         print(update_query)

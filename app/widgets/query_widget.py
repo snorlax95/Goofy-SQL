@@ -29,15 +29,15 @@ class QueryWidget(QWidget):
             QMessageBox.about(self, 'Oops!', f'You have an error: \n {results}')
         else:
             self.table.clear()
-            if self.query[:6] != 'SELECT':
-                self.table.set_headers(['Results'])
-                self.table.set_rows([{'rows': f'Inserted {results} rows'}])
-                self.table.display()
-            else:
+            if isinstance(results, list):
                 headers = list(results[0].keys())
                 self.table.set_headers(headers)
                 self.table.set_rows(results)
                 self.table.display()
-
+            else:
+                self.table.set_headers(['Results'])
+                self.table.set_rows([{'rows': f'Inserted {results} rows'}])
+                self.table.display()
+            
     def update(self):
         pass

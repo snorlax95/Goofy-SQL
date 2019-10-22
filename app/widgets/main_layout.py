@@ -87,6 +87,7 @@ class MainWidget(QWidget):
             if tables:
                 self.select_table(tables[0])
             else:
+                self.connection_helper.selected_table = None
                 self.manage_buttons()
         else:
             self.select_table(self.connection_helper.selected_table)

@@ -14,13 +14,19 @@ class SchemaWidget(QWidget):
         super().__init__()
         self.connection_helper = connection_helper
         self.model = QStandardItemModel()
+        self.edit_cell_value = None
         self.schema = None
         self.model.itemChanged.connect(self.edit_cell)
-        self.column_labels = ["Field", "Type", "Unsigned", "Zerofill", "Binary",
+        self.column_labels = ["Field", "Type", "Unsigned", "Zerofill",
                               "Allow Null", "Key", "Default", "Extra"]
 
         # need index form for adding new keys. Not a separate table..just a button
+        # need ability to arrange rows (not super important)
         # need columns resized
+        # if string (varchar, longtext, etc...) allow binary, null, encoding, and collation)
+        # if integer (float int, decimal, etc...) allow unsigned, zero, null
+        # if datetime or date only allow null
+        # if primary key, dont allow null
         self.init_ui()
         self.refresh()
         
@@ -31,6 +37,8 @@ class SchemaWidget(QWidget):
     def edit_cell(self, item):
         row = item.row()
         row_values = {}
+        table_column = self.model.item(row, 0).text()
+        simple_type = self.schema['columns'][table_column]['Simple_Type']
         for column_index in range(self.model.columnCount()):
             column_header = self.model.horizontalHeaderItem(column_index).text()
             item = self.model.item(row, column_index)
@@ -39,9 +47,10 @@ class SchemaWidget(QWidget):
             else:
                 value = item.data(Qt.EditRole)
             row_values[column_header] = value
-        result = self.connection_helper.modify_table_column(None, row_values)
+        result = self.connection_helper.modify_table_column(None, row_values, simple_type)
         if isinstance(result, str):
             QMessageBox.about(self, 'Oops!', f'You have an error: \n {result}')
+            self.refresh()
 
     def refresh(self):
         self.model.clear()
@@ -60,19 +69,21 @@ class SchemaWidget(QWidget):
             items.append(standard_item)
 
             standard_item = QStandardItem()
+            if val['Simple_Type'] != 'number':
+                standard_item.setCheckable(False)
+            else:
+                standard_item.setCheckable(True)
             if val['Unsigned'] is True:
                 standard_item.setCheckState(Qt.CheckState.Checked)
-            standard_item.setCheckable(True)
             items.append(standard_item)
 
             standard_item = QStandardItem()
+            if val['Simple_Type'] != 'number':
+                standard_item.setCheckable(False)
+            else:
+                standard_item.setCheckable(True)
             if val['Zerofill'] is True:
                 standard_item.setCheckState(Qt.CheckState.Checked)
-            standard_item.setCheckable(True)
-            items.append(standard_item)
-
-            standard_item = QStandardItem()
-            standard_item.setCheckable(True)
             items.append(standard_item)
 
             standard_item = QStandardItem()
@@ -99,9 +110,5 @@ class SchemaWidget(QWidget):
         self.SchemaTable.setModel(self.model)
         self.SchemaTable.resizeColumnsToContents()
 
-    def manage_buttons(self):
-        pass
-
     def update(self):
-        pass
-        # self.refresh()
+        self.refresh()
