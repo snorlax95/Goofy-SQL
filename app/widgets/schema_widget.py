@@ -1,5 +1,5 @@
 from os import path
-from PyQt5.QtWidgets import QWidget, QMessageBox
+from PyQt5.QtWidgets import QWidget, QMessageBox, QAbstractItemView
 from PyQt5 import uic
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtCore import Qt, QVariant
@@ -21,18 +21,32 @@ class SchemaWidget(QWidget):
                               "Allow Null", "Key", "Default", "Extra"]
 
         # need index form for adding new keys. Not a separate table..just a button
-        # need ability to arrange rows (not super important)
         # need columns resized
-        # if string (varchar, longtext, etc...) allow binary, null, encoding, and collation)
-        # if integer (float int, decimal, etc...) allow unsigned, zero, null
-        # if datetime or date only allow null
-        # if primary key, dont allow null
         self.init_ui()
         self.refresh()
         
     def init_ui(self):
         uic.loadUi(ui_file, self)
         self.RefreshButton.clicked.connect(self.refresh)
+        self.AddRowButton.clicked.connect(self.add_row)
+        self.RemoveRowButton.clicked.connect(self.remove_row)
+        self.SchemaTable.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.SchemaTable.setSelectionMode(QAbstractItemView.SingleSelection)
+
+    def add_row(self):
+        print('')
+
+    def remove_row(self):
+        reply = QMessageBox.question(self, 'Wait!', f"Are you sure you want to delete this column?", 
+        QMessageBox.Yes|QMessageBox.No)
+
+        if reply == QMessageBox.Yes:
+            rows = self.SchemaTable.selectionModel().selectedRows()
+            for row in rows:
+                row_index = row.row()
+                column_name = self.model.item(row_index, 0).text()
+                self.connection_helper.drop_table_column(None, column_name)
+        self.refresh()
 
     def edit_cell(self, item):
         row = item.row()

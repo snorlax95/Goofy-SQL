@@ -288,6 +288,23 @@ class MySQL():
                 return {'column_name': column['Field'], 'column_index': idx}
         return False
 
+    def drop_table_column(self, table, column_name):
+        if table is None:
+            table = self.selected_table
+
+        query = f"ALTER TABLE `{table}` DROP `{column_name}`"
+        print(query)
+        cursor = self.connection.cursor(DictCursor)
+        cursor = self.use_database(self.selected_database, cursor)
+        try:
+            result = cursor.execute(query)
+            self.connection.commit()
+            cursor.close()
+            return result
+        except Exception as e:
+            cursor.close()
+            return 'Got error {!r}, errno is {}'.format(e, e.args[0])
+
     def modify_table_column(self, table, values, simple_type):
         # CHARACTER SET {char_set}
         # COLLATION {collation}
