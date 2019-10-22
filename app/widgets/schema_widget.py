@@ -39,7 +39,7 @@ class SchemaWidget(QWidget):
             else:
                 value = item.data(Qt.EditRole)
             row_values[column_header] = value
-        result = self.connection_helper.modify_table(None, row_values)
+        result = self.connection_helper.modify_table_column(None, row_values)
         if isinstance(result, str):
             QMessageBox.about(self, 'Oops!', f'You have an error: \n {result}')
 

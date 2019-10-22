@@ -287,7 +287,7 @@ class MySQL():
         else:
             default = f"DEFAULT {values['Default']} "
 
-        query = f"ALTER TABLE {table} MODIFY " \
+        query = f"ALTER TABLE '{table}' MODIFY " \
             f"{values['Field']} {values['Type']} " \
             f"{'UNSIGNED ' if values['Unsigned'] else ''}" \
             f"{'ZEROFILL ' if values['Zerofill'] else ''}" \
@@ -311,7 +311,7 @@ class MySQL():
         # Handle Key       PRIMARY KEY (column name)
         # other keys. UNIQUE could be another type    CREATE UNIQUE INDEX (name) ON table(column, column 2)
         if type == 'primary':
-            query = f"ALTER TABLE {table} DROP PRIMARY KEY, ADD PRIMARY KEY({columns})"
+            query = f"ALTER TABLE '{table}' DROP PRIMARY KEY, ADD PRIMARY KEY({columns})"
         else:
             query = f"CREATE {type} INDEX ({name}) ON {table}({columns})"
         print(query)
@@ -325,14 +325,14 @@ class MySQL():
         if identifier_column is False:
             # WHERE every single row value is checked, no key to rely on. LIMIT 1
             # WHERE column=value, column=value, column=value LIMIT 1
-            update_query = f"UPDATE {table} SET {column_value}='{converted_value}' WHERE " \
+            update_query = f"UPDATE '{table}' SET {column_value}='{converted_value}' WHERE " \
                 f"{identifier_column}={table} LIMIT 1"
         else:
             if isinstance(converted_value, str):
-                update_query = f"UPDATE {table} SET {column_value}='{converted_value}' WHERE " \
+                update_query = f"UPDATE '{table}' SET {column_value}='{converted_value}' WHERE " \
                     f"{identifier_column['column_name']}={row_values[identifier_column['column_index']]}"
             else:
-                update_query = f"UPDATE {table} SET {column_value}={converted_value} WHERE " \
+                update_query = f"UPDATE '{table}' SET {column_value}={converted_value} WHERE " \
                     f"{identifier_column['column_name']}={row_values[identifier_column['column_index']]}"
 
         print(update_query)
