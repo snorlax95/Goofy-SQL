@@ -82,10 +82,7 @@ class ResultsTable(QWidget):
                 elif isinstance(item, datetime.date):
                     standard_item.setData(QDate(item), Qt.EditRole)
                 elif isinstance(item, str):
-                    if column == 'json_col':
-                        standard_item.setData(QJsonValue(item), Qt.EditRole)
-                    else:
-                        standard_item.setData(QVariant(item), Qt.EditRole)
+                    standard_item.setData(QVariant(item), Qt.EditRole)
                 else:
                     standard_item.setData(QVariant(item), Qt.EditRole)
                 items.append(standard_item)
