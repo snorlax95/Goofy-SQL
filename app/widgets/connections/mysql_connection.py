@@ -1,5 +1,6 @@
 import pymysql
 import copy
+from PyQt5.QtWidgets import QMessageBox
 from sshtunnel import SSHTunnelForwarder
 from pymysql.cursors import DictCursor
 
@@ -116,7 +117,8 @@ class MySQL():
             cursor.execute(f"USE `{db_name}`")
             return cursor
         except Exception as e:
-            return 'Got error {!r}, errno is {}'.format(e, e.args[0])
+            QMessageBox.about(self, 'Oops!', 'Got error {!r}, errno is {}'.format(e, e.args[0]))
+            return cursor
 
     def get_databases(self):
         cursor = self.connection.cursor(DictCursor)
