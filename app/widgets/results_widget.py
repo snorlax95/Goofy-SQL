@@ -88,5 +88,13 @@ class ResultsTable(QWidget):
                 items.append(standard_item)
             self.model.insertRow(idx, items)
 
+    def get_sort(self):
+        sort_column = self.ResultsTable.horizontalHeader().sortIndicatorSection()
+        sort_type = self.ResultsTable.horizontalHeader().sortIndicatorOrder()
+        return {'column': sort_column, 'type': sort_type}
+
+    def update_sort(self, column, type):
+        self.ResultsTable.sortByColumn(column, type)
+
     def display(self):
         self.ResultsTable.setModel(self.model)

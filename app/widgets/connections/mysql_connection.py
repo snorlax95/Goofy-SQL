@@ -1,6 +1,5 @@
 import pymysql
 import copy
-from PyQt5.QtWidgets import QMessageBox, QWidget
 from sshtunnel import SSHTunnelForwarder
 from pymysql.cursors import DictCursor
 
@@ -81,9 +80,8 @@ class MySQL():
             return 'Got error {!r}, errno is {}'.format(e, e.args[0])
 
     def create_table(self, name, encoding, collation, engine):
-        cursor = self.connection.cursor(DictCursor)
-        cursor = self.use_database(self.selected_database, cursor)
         try:
+            cursor = self.get_cursor(db_name=self.selected_database)
             cursor.execute(f"CREATE TABLE {name} (id INT NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)) \
                 ENGINE={engine} CHARACTER SET {encoding} COLLATE {collation}")
             cursor.close()
@@ -92,9 +90,8 @@ class MySQL():
             return 'Got error {!r}, errno is {}'.format(e, e.args[0])
 
     def delete_table(self, name):
-        cursor = self.connection.cursor(DictCursor)
-        cursor = self.use_database(self.selected_database, cursor)
         try:
+            cursor = self.get_cursor(db_name=self.selected_database)
             cursor.execute(f"DROP TABLE IF EXISTS {name}")
             cursor.close()
             return True
@@ -102,8 +99,7 @@ class MySQL():
             return 'Got error {!r}, errno is {}'.format(e, e.args[0])
 
     def select_database(self, db_name):
-        cursor = self.connection.cursor(DictCursor)
-        cursor = self.use_database(db_name, cursor)
+        cursor = self.get_cursor(db_name=db_name)
         cursor.close()
         if isinstance(cursor, str):
             return False
@@ -112,13 +108,11 @@ class MySQL():
             self.selected_table = None
             return True
 
-    def use_database(self, db_name, cursor):
-        try:
+    def get_cursor(self, db_name=None):
+        cursor = self.connection.cursor(DictCursor)
+        if db_name is not None:
             cursor.execute(f"USE `{db_name}`")
-            return cursor
-        except Exception as e:
-            QMessageBox.about(QWidget, 'Oops!', 'Got error {!r}, errno is {}'.format(e, e.args[0]))
-            return cursor
+        return cursor
 
     def get_databases(self):
         cursor = self.connection.cursor(DictCursor)
@@ -135,8 +129,7 @@ class MySQL():
         return database_names
 
     def get_tables(self):
-        cursor = self.connection.cursor(DictCursor)
-        cursor = self.use_database(self.selected_database, cursor)
+        cursor = self.get_cursor(db_name=self.selected_database)
         cursor.execute("SHOW TABLES")
         tables = cursor.fetchall()
         table_names = []
@@ -146,9 +139,8 @@ class MySQL():
         return table_names
 
     def custom_query(self, query):
-        cursor = self.connection.cursor(DictCursor)
-        cursor = self.use_database(self.selected_database, cursor)
         try:
+            cursor = self.get_cursor(db_name=self.selected_database)
             if query[:6] == 'SELECT' or query[:4] == 'SHOW':
                 cursor.execute(query)
                 result = cursor.fetchall()
@@ -158,21 +150,19 @@ class MySQL():
             cursor.close()
             return result
         except Exception as e:
-            cursor.close()
             return 'Got error {!r}, errno is {}'.format(e, e.args[0])
 
     def get_table_schema(self, table=None):
-        cursor = self.connection.cursor(DictCursor)
         if table is None:
             table = self.selected_table
         try:
+            cursor = self.get_cursor(db_name=self.selected_database)
             cursor.execute(f"DESCRIBE {table}")
             results = cursor.fetchall()
             cursor.close()
             self.selected_table_schema = results
             return results
         except Exception as e:
-            cursor.close()
             return 'Got error {!r}, errno is {}'.format(e, e.args[0])
 
     def get_standardized_schema(self, table, schema):
@@ -219,9 +209,8 @@ class MySQL():
         select_query = f"SELECT * FROM {self.selected_table}  LIMIT {index}, {interval};"
         count_query = f"SELECT COUNT(*) as count FROM {self.selected_table};"
         self.connection.autocommit(True)
-        cursor = self.connection.cursor(DictCursor)
-        cursor = self.use_database(self.selected_database, cursor)
         try:
+            cursor = self.get_cursor(db_name=self.selected_database)
             cursor.execute(select_query)
             results = cursor.fetchall()
             cursor.execute(count_query)
@@ -230,7 +219,6 @@ class MySQL():
             self.connection.autocommit(False)
             return {'results': results, 'count': count}
         except Exception as e:
-            cursor.close()
             self.connection.autocommit(False)
             return 'Got error {!r}, errno is {}'.format(e, e.args[0])
 
@@ -296,15 +284,13 @@ class MySQL():
 
         query = f"ALTER TABLE `{table}` DROP `{column_name}`"
         print(query)
-        cursor = self.connection.cursor(DictCursor)
-        cursor = self.use_database(self.selected_database, cursor)
         try:
+            cursor = self.get_cursor(db_name=self.selected_database)
             result = cursor.execute(query)
             self.connection.commit()
             cursor.close()
             return result
         except Exception as e:
-            cursor.close()
             return 'Got error {!r}, errno is {}'.format(e, e.args[0])
 
     def modify_table_column(self, table, values, simple_type):
@@ -331,15 +317,13 @@ class MySQL():
             f"{default}"
         print(query)
 
-        cursor = self.connection.cursor(DictCursor)
-        cursor = self.use_database(self.selected_database, cursor)
         try:
+            cursor = self.get_cursor(db_name=self.selected_database)
             affected_rows = cursor.execute(query)
             self.connection.commit()
             cursor.close()
             return affected_rows
         except Exception as e:
-            cursor.close()
             return 'Got error {!r}, errno is {}'.format(e, e.args[0])
 
     def modify_table_key(self, table, columns, index_type, name):
@@ -369,9 +353,8 @@ class MySQL():
                     f"{identifier_column['column_name']}={row_values[identifier_column['column_index']]}"
 
         print(update_query)
-        cursor = self.connection.cursor(DictCursor)
-        cursor = self.use_database(self.selected_database, cursor)
         try:
+            cursor = self.get_cursor(db_name=self.selected_database)
             affected_rows = cursor.execute(update_query)
             self.connection.commit()
             cursor.close()

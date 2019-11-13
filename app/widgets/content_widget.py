@@ -74,11 +74,15 @@ class ContentWidget(QWidget):
 
     def page_back(self):
         self.current_interval -= self.interval
+        sort = self.table.get_sort()
         self.refresh()
+        self.table.update_sort(sort['column'], sort['type'])
 
     def page_forward(self):
         self.current_interval += self.interval
+        sort = self.table.get_sort()
         self.refresh()
+        self.table.update_sort(sort['column'], sort['type'])
 
     def update(self):
         if self.current_table != self.connection_helper.selected_table:
