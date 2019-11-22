@@ -95,11 +95,15 @@ class MainWidget(QWidget):
     def set_database_options(self):
         databases = self.connection_helper.get_databases()
         self.DatabaseDropdown.clear()
-        self.DatabaseDropdown.currentIndexChanged.connect(self.select_database)
         self.DatabaseDropdown.addItems(databases['common'])
         self.DatabaseDropdown.addItems(databases['unique'])
+        self.DatabaseDropdown.currentIndexChanged.connect(self.select_database)
         if self.connection_helper.selected_database is not None:
             self.DatabaseDropdown.setCurrentText(self.connection_helper.selected_database)
+        elif len(databases['unique']):
+            self.DatabaseDropdown.setCurrentText(databases['unique'][0])
+        else:
+            self.DatabaseDropdown.setCurrentText(databases['common'][0])
 
     def select_database(self):
         self.enable_buttons()

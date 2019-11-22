@@ -1,10 +1,7 @@
 import os
 import sys
 from PyQt5.QtWidgets import QApplication
-try:
-    from .widgets.window import MainWindow
-except ModuleNotFoundError:
-    from widgets.window import MainWindow
+from widgets.window import MainWindow
 
 
 class App(QApplication):
